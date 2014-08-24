@@ -1,0 +1,288 @@
+horgand ChangeLog
+
+
+
+
+
+
+== v1.15 (  /  /2008) ==
+-------------------------------------------------------------------------------------------
+- Code optimized.
+- OPs ... fix the program exit :-)
+- Use sse2 as posible
+- Removed tricks for unuse CPU, now better sound.
+- By Default use jack.
+- add optimized options in configure.
+- Jack MIDI.
+- Use jack_client_open instead of jack_client_new.
+- Add ALSA seq client name.
+- fixed small graphic things.
+- Typo fix.
+- Remember loaded bank filename.
+- Fix <C> date.
+- Up to 1000 sounds.
+
+
+
+
+
+
+== v1.14 (26/10/2007) ==
+-------------------------------------------------------------------------------------------
+- Optimized Reverb, less CPU usage.
+- Fix bug on Delay time.
+- Added wave type for LFO effects.
+- Fix small bug initializing vars. 
+- small changes on GUI, and ADSR range values. 
+- Added 5 New waveforms.
+- Bug Fixed, reading sounds in More Sounds menu bank manager. 
+- Added New Bank, bank file to init state for work with a empty banks.
+- Suggest preset name at Save File.
+- Back to Alsa if JACK was not started.
+- Optimized code, less CPU usage    
+
+
+
+
+
+== v1.12 (17/09/2007) ==
+--------------------------------------------------------------------------------------------
+- Posibility to run without GUI.
+- Added Keyboard Velocity Scaling.
+- Fixed bug in Name display.
+- Added 3 waveforms more.
+- Added syncro speed to all the LFO effects.
+- Support for old file formats >=1.11.
+- Code optimized. 
+- Added Click.
+- Added the posibility to load sounds from other banks
+  to manage/mix banks.
+- sustain pedal now sustain '0' sustain sounds.
+- Adjust initial state settings. 
+- Normalize Volumes.
+- Adjust Rotary LFO Amplitude.
+- Added file browser to select wav rhythm files. 
+- Fix widget positions.
+- Remember last saved Bank.
+- Fixed bug in command line.
+- Fixed bug initiating ryhthms.
+- Default buffer 128 again.
+- Fixed jack crash for non-statig libxpm hints.
+
+
+
+
+== v1.11 (30/08/2007) ==
+--------------------------------------------------------------------------------------------
+- Added FLTK options on command line.
+- Added window icon. 
+- Normalize volumes.
+- Removed Keyboard Level Scaling.
+- Prevent to load old format files.
+- Fixed Preset at first time bug.
+- Fixed Master Volume bug.
+- Added organ transpose.
+- Adjust linear interpolation in chorus effect. 
+- Drawbars in stereo mode for better sound.
+- Preset adjust.
+- Bank/Sound format file changed.
+- Synth engine parameters can be edited and stored for each preset.
+- More tremolo power.
+
+
+
+
+
+== v1.10 (20/08/2007) ==
+--------------------------------------------------------------------------------------------
+- Normalize Volumes.
+- Solve bug on Compare.
+- Adjust presets.
+- Small visual changes.
+- Each drawbar can be managed as percussion.
+- Visual and program settings saved and restored.
+- Optimized some $prefix things.
+- New Tremolo.
+- Rottary and Chorus now can coexist.
+- New Chorus and new buffer for variable delay Effects
+- Small code optimization.
+- More code changes to prevent crashes with RT-Kernels.
+- Better Jack support reducing CPU usage.
+
+
+
+
+== v1.09 (05/08/2007) ==
+--------------------------------------------------------------------------------------------
+- Code optimized.
+- Presets modified.
+- Improved some compile options.
+- Upgraded to Make Tools 1.7
+- Maintain split status on program change.
+- Bass type is selected when program starts ( Krzysztof Foltman).
+- Fixed FLTK search on Make Tools scripts (Krzysztof Foltman).
+- Fixed crash on RT-Kernels.
+- Less memory ( 8 Mb) usage.
+- DSP Effects Improved.
+- New ADSR.
+- Attack removed.
+- Marimba removed.
+- Sound engine improved. 
+- Krzysztof Foltman <krzysztof@foltman.com> involved into the project.   
+- Small DSP Changes.
+- Small changes in envelope.
+- Fixed Rotary Clicks.
+- Changed Reverb Presets
+
+
+
+
+
+== v1.07 (23/06/2004) ==
+---------------------------------------------------------------------------------------------
+- Sound Engine Changed (10 Carriers), +/- same sound than 20 carriers and half CPU
+  usage
+- Recognizes MIDI Control Reverb depth message.
+- Recognizes MIDI Control Chorus depth message.
+- Fixed bug cleaning reverb.
+- Default Bank modified.
+- Improved speed.
+- Improved Envelope.
+- Changed FIFO schedule priority, now works on kernel 2.6.
+- Velocity Sensitivity modified.
+- Fixed bug in bass tune when jackd changes the default samplerate.
+- Clean code.
+- removed realtime priority.
+- Changed schedule priority.
+- Default Bank modified.
+- Improved Reverb.
+- Improved Rotary effect.
+- Auto adjust internal sample rate to jackd sample rate. 
+
+
+
+
+== v1.06 (13/02/2004) ==
+---------------------------------------------------------------------------------------------
+- Modified sounds.
+- Added Volume for organ section.
+- Master Volume now control the whole organ.
+- Update jack-process
+- Fixed bug in change programs.
+- Added more sounds.
+- Improved Tremolo Speed.
+- Added drawbar conversion to marimba
+- Improved ADSR.
+- Man File updated.
+- Fixed bug in command line.
+- Split source code for future development.
+- File format changed, new default bank released.
+- Improved Detune for stereo effect.
+- Sound engine changed (20 Carriers) (10x2)(stereo)
+
+
+
+
+== v1.05 (19/01/2004) ==
+---------------------------------------------------------------------------------------------
+- Added GPL headers in sources.
+- Fixed bug in auto-connect, now connect into the specified port.
+- Improved Menus.
+- Fixed Bug in compare and Load functions.
+- Fixed Bug in Undo/Redo.
+- Fixed Bug in new function.
+- Optimized for low graphic resolutions
+- Rotary improved.
+- Changes programs without stop rhythm.
+- Added Change program in main window.
+- Small Changes in look.
+- Added and Changed Default Sound Bank.
+- Fixed Bug in Start/Stop
+- Fixed bug in bar led.
+- Select Rhythm 1 at start.
+- Load Bank 1 at start if command line provides.
+- Optimized code to fix format strings.
+- Drastically reduced the amount of memory needed.
+- Main window re-sizable.
+- Added memory lock.
+- Added FIFO real-time priority.
+- Improved Graphic Speed.
+
+
+
+== v1.04 (20/12/2003) ==
+----------------------------------------------------------------------------------------------
+- Solved bug in compilation.
+- Solved bug in compilation scripts.
+- Removed warnings in compilation.
+- Solved bug in tempo led
+- Load default bank at start.
+- Solved bug "flash" in command line.
+- Settings changed, Added default bank
+- Removed unused variables.
+- Debugged memory usage.
+- Solved bug in refresh labels adding output value widget replacing labels. 
+
+
+
+== v1.03 (11/12/2003) ==
+----------------------------------------------------------------------------------------------
+- Solved small bugs.
+- Solved bug now horgand read the configuration rhythm file from the installed
+  directory.
+- Re-write GNU-Autotools scripts, now better.
+- Re-write alsa detection for compatibility with alsa 1.0 pre1.
+- Re-write jack support for compatibility with jack 0.80.
+
+
+
+== v1.02 (24/06/2003) ==
+----------------------------------------------------------------------------------------------
+- Bass file pattern editor.
+- Possibility to load-save your rhythm patterns.
+- New command line option.
+- Added more chords to recognition.
+- Bug in +7 chord resolved.
+
+
+
+== v1.01 (21/06/2003) ==
+----------------------------------------------------------------------------------------------
+- Fixed Bass frequency's, now are tuned :-)
+- Master Transpose transposes the bass line too.
+- Master MasterTune tunes the bass line too. 
+- Added more chords to recognition.
+- Fixed small bugs in split, chords ...
+
+
+
+== v1.00 (19/06/2003) ==
+------------------------------------------------------------------------------------------------
+- Added small auto-accompaniment, Looped Drums and a Bass line in
+  a wave table way.
+- Added chord recognition
+- Some free drum loops and bass samples. 
+- Bugs solved in DSP effects, now more stereo, minus noises :-)
+
+
+
+== v0.92 (13/06/2003) ==
+-------------------------------------------------------------------------------------------------
+- Added Reverb at this moment only presets available.
+- All the sliders and dials widget response in real-time.
+- Solved bug in keyboard level scaling, that reduced noises, 
+  unfortunately sound changes a little bit.
+- Small look changes and other minor bugs solved.
+
+
+== v0.91 (05/06/2003) ==
+-------------------------------------------------------------------------------------------------
+- Tones of major and minor bugs solved. 
+- Many "noises" removed.
+- Code optimized for speed-up at least a 20%. 
+
+
+== v0.90 (27/05/2003) ==
+--------------------------------------------------------------------------------------------------
+
+- First Release.

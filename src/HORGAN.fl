@@ -1,0 +1,3302 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0110 
+i18n_type 1 
+i18n_include <libintl.h> 
+i18n_function gettext 
+header_name {.h} 
+code_name {.cxx}
+decl {//Copyright (c) 2003-2008 Josep Andreu (Holborn)} {} 
+
+decl {//License: GNU GPL version 2} {} 
+
+decl {\#include "Holrgan.h"} {public
+} 
+
+decl {\#include <FL/x.H>} {public global
+} 
+
+decl {\#include "horgand128.xpm"} {} 
+
+decl {\#include <FL/Fl_File_Chooser.H>} {public
+} 
+
+decl {\#include <FL/Fl_Dial.H>} {public
+} 
+
+class Drawbar {: {public Fl_Slider}
+} {
+  Function {Drawbar(int x,int y, int w, int h, const char *label=0):Fl_Slider(x,y,w,h,label)} {} {}
+  Function {handle(int event)} {open return_type int
+  } {
+    code {switch(event)
+{
+
+case FL_RELEASE:
+{
+draw();
+Signal_for_Cb_Sliders=1;
+do_callback();
+return 1;
+}
+
+
+case FL_DRAG: 
+{
+Fl_Slider::handle(FL_DRAG,x(),y(),w(),h());
+draw();
+do_callback();
+return 1;
+}
+
+case FL_SHORTCUT:
+return 0;
+
+default:
+return 1;
+}} {}
+  }
+} 
+
+class Rueda {: {public Fl_Dial}
+} {
+  Function {Rueda(int x,int y, int w, int h, const char *label=0):Fl_Dial(x,y,w,h,label)} {} {}
+  Function {handle(int event)} {return_type int
+  } {
+    code {switch(event)
+{
+
+case FL_RELEASE:
+{
+draw();
+Signal_for_Cb_Sliders=1;
+do_callback();
+return 1;
+}
+
+
+case FL_DRAG: 
+{
+Fl_Dial::handle(FL_DRAG,x(),y(),w(),h());
+draw();
+do_callback();
+return 1;
+}
+
+case FL_SHORTCUT:
+return 0;
+
+default:
+return 1;
+}} {}
+  }
+} 
+
+class HORGAN {} {
+  decl {HOR *hor;} {}
+  Function {make_window()} {} {
+    Fl_Window HORwindow {
+      callback {Guarda_Pref(0);
+o->hide();
+Pexitprogram=1;}
+      xywh {1587 81 825 595} type Double color 33 selection_color 47 resizable visible
+    } {
+      Fl_Box {} {
+        xywh {595 405 230 190} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL labelsize 17 labelcolor 4 align 1
+      }
+      Fl_Box {} {
+        xywh {0 310 595 285} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL align 5
+      }
+      Fl_Box {} {
+        xywh {385 235 80 75} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL labelsize 17 labelcolor 4 align 1
+      }
+      Fl_Box {} {
+        xywh {530 90 65 220} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL labelsize 17 labelcolor 4 align 1
+      }
+      Fl_Box {} {
+        xywh {0 90 105 220} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL labelsize 19 labelcolor 4 align 1
+      }
+      Fl_Box {} {
+        xywh {-30 25 855 65} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL align 5
+      }
+      Fl_Box {} {
+        xywh {465 90 65 220} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL align 5
+      }
+      Fl_Box {} {
+        xywh {105 90 65 220} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL labelsize 19 labelcolor 4 align 1
+      }
+      Fl_Box {} {
+        xywh {235 235 150 75} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL labelsize 17 labelcolor 4 align 1
+      }
+      Fl_Box {} {
+        xywh {385 90 80 145} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL labelsize 17 labelcolor 4 align 1
+      }
+      Fl_Box {} {
+        xywh {170 90 65 220} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL labelsize 19 labelcolor 4 align 1
+      }
+      Fl_Button PANICO {
+        label {Panic!!}
+        callback {hor->panic();}
+        xywh {5 275 95 30} box PLASTIC_UP_BOX shortcut 0xff0d color 1 labelcolor 7
+      }
+      Fl_Menu_Bar MenuPrincipal {
+        xywh {0 0 1030 25} box THIN_UP_BOX
+      } {
+        Submenu MFile {
+          label {&File}
+          callback {Fl::focus(PANICO);} open
+          xywh {0 0 100 20}
+        } {
+          MenuItem {} {
+            label {&New...}
+            callback {hor->New();
+ApagaTodo();
+meteprog();
+Actu();
+hor->PutPrim();
+sprintf(hor->temporal, "--"); 
+DispNumber->label(hor->temporal);
+CPrograma->value(0);}
+            xywh {0 0 100 20} divider
+          }
+          MenuItem {} {
+            label {&Load...}
+            callback {char *filename;
+Fl::focus(PANICO);
+filename=fl_file_chooser("Load File:","(*.hor)",NULL,0);
+if (filename==NULL) return;
+filename=fl_filename_setext(filename,".hor");
+hor->loadfile(filename);
+PutLoaded();}
+            xywh {0 0 100 20}
+          }
+          MenuItem {} {
+            label {&Save...}
+            callback {char *filename;
+\#define EXT ".hor"
+filename=fl_file_chooser("Save File:","(*"EXT")",hor->a.Name,0);
+if (filename==NULL) return;
+filename=fl_filename_setext(filename,EXT);
+\#undef EXT
+hor->savefile(filename);
+hor->PutPrim();}
+            xywh {0 0 100 20} divider
+          }
+          MenuItem {} {
+            label {Load Bank...}
+            callback {BLoad->do_callback(o);}
+            xywh {0 0 100 20}
+          }
+          MenuItem {} {
+            label {Save Bank...}
+            callback {BSave->do_callback(o);}
+            xywh {0 0 100 20} divider
+          }
+          MenuItem {} {
+            label {Load Rhythm...}
+            callback {char *filename;
+Fl::focus(PANICO);
+filename=fl_file_chooser("Load:","(*.txt)",NULL,0);
+if (filename==NULL) return;
+filename=fl_filename_setext(filename,".txt");
+hor->loadrhyt(filename);
+meteritmos();}
+            xywh {0 0 100 20}
+          }
+          MenuItem {} {
+            label {Save Rhythm...}
+            callback {char *filename;
+\#define EXT ".txt"
+filename=fl_file_chooser("Save:","(*"EXT")",NULL,0);
+if (filename==NULL) return;
+filename=fl_filename_setext(filename,EXT);
+\#undef EXT
+hor->saverhyt(filename);}
+            xywh {0 0 100 20} divider
+          }
+          MenuItem {} {
+            label {&About...}
+            callback {aboutwindow->position(HORwindow->x()+200,HORwindow->y()+200);
+aboutwindow->show();
+put_icon(aboutwindow);}
+            xywh {0 0 100 20} divider
+          }
+          MenuItem {} {
+            label {E&xit}
+            callback {HORwindow->do_callback();}
+            xywh {0 0 100 20}
+          }
+        }
+        Submenu MEdit {
+          label {&Edit} open
+          xywh {0 0 100 20}
+        } {
+          MenuItem {} {
+            label {&Undo}
+            callback {Undo();}
+            xywh {0 0 100 20} shortcut 0x4007a
+          }
+          MenuItem {} {
+            label {&Redo}
+            callback {Redo();}
+            xywh {0 0 100 20} shortcut 0x40072 divider
+          }
+          MenuItem {} {
+            label {&Synthesizer}
+            callback {ADSRwin->hide();
+
+
+
+
+D_Freq->value(1);
+D_Freq_F->value(1);
+D_FFval->lstep(0.001);
+D_Click_Freq->lstep(100);
+D_Click_Freq2->lstep(100);
+
+
+metesynth();
+
+Fl_Preferences horgand (Fl_Preferences::USER, WEBSITE , PACKAGE);
+
+int x,y;
+
+horgand.get("Synth X",x,1);
+horgand.get("Synth Y",y,1);
+
+ADSRwin->position(x,y);
+ADSRwin->show();
+put_icon(ADSRwin);}
+            xywh {0 0 100 20} shortcut 0x40073
+          }
+        }
+        MenuItem MBank {
+          label {&Bank}
+          callback {int x,y;
+Fl_Preferences horgand (Fl_Preferences::USER, WEBSITE , PACKAGE);
+horgand.get("HORBank X",x,1);
+horgand.get("HORBank Y",y,1);
+HORBank->position(x,y);
+HORBank->show();
+put_icon(HORBank);
+Fl::focus(BClose);}
+          xywh {0 0 100 20} shortcut 0x80062
+        }
+        MenuItem {} {
+          label {&Settings}
+          callback {MiraClientes();
+MiraConfig();
+Settingswindow->position(HORwindow->x(),HORwindow->y());
+Settingswindow->show();
+put_icon(Settingswindow);
+Fl::focus(SClose);}
+          xywh {0 0 100 20} shortcut 0x80073
+        }
+      }
+      Fl_Box {} {
+        xywh {240 139 46 46} box OVAL_FRAME
+      }
+      Fl_Box {} {
+        xywh {305 115 31 90} box DOWN_FRAME
+      }
+      Fl_Box {} {
+        xywh {235 90 150 145} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL labelsize 19 labelcolor 4 align 1
+      }
+      Fl_Box {} {
+        label Volume
+        xywh {250 210 55 20} labelsize 10 labelcolor 208 align 16
+      }
+      Fl_Box MT {
+        label {Master Tune}
+        callback {// Refresh MIDI Input Level on GUI
+if (LastMidiInLevel != MidiInLevel) VUI1->value(MidiInLevel);
+
+      // Refresh Bar Lead of Drum Loops
+if (hor->Rhythm_On != 0) if (BarLead != VUI2->value()) VUI2->value(BarLead);
+
+      // Refresh Chord Names
+
+if (changeNameChord == 1)
+   {
+    ACI->label(NameChord);
+    changeNameChord = 0;
+    }
+      // If MIDI Program Change Message arrives change preset
+
+if (CPrograma->active())
+   {
+     if (preset != 0)
+        {
+          PutCombi (preset);
+          preset = 0;
+        }
+
+    } else preset = 0;
+    
+    
+if (hor->cambiaDriver)
+   {
+      
+   DMIN2->do_callback();   
+   hor->cambiaDriver=0;   
+      
+   }}
+        xywh {385 240 75 15} labelsize 10 labelcolor 208 align 208
+      }
+      Fl_Box {} {
+        label Delay
+        xywh {320 240 45 15} labelsize 10 labelcolor 208 align 208
+      }
+      Fl_Box {} {
+        label Transpose
+        xywh {385 273 75 15} labelsize 10 labelcolor 208 align 208
+      }
+      Fl_Box {} {
+        label Volume
+        xywh {315 273 50 15} labelsize 10 labelcolor 208 align 208
+      }
+      Fl_Light_Button CF {
+        label {Compare First}
+        callback {if (o->value() != 0 ) {
+CL->deactivate();
+MFile->deactivate();
+MBank->deactivate();
+MEdit->deactivate();
+CPrograma->deactivate();
+}
+else {
+CL->activate();
+CPrograma->activate();
+MFile->activate();
+MBank->activate();
+MEdit->activate();
+}
+
+if ( o->value() != 0 )
+{
+ 
+ GetPrim();
+} 
+else
+{
+UndoCount++;
+Undo();
+}}
+        xywh {5 235 95 40} box PLASTIC_UP_BOX color 0 labelsize 12 labelcolor 7 align 212 when 1
+      }
+      Fl_Light_Button CL {
+        label {Compare Last}
+        callback {if (o->value() != 0 ) {
+CF->deactivate();
+MFile->deactivate();
+MBank->deactivate();
+MEdit->deactivate();
+CPrograma->deactivate();
+}
+else{
+
+CF->activate();
+CPrograma->activate();
+MFile->activate();
+MBank->activate();
+MEdit->activate();
+}
+
+if ( o->value() != 0 ) Undo(); else Redo();}
+        xywh {5 195 95 40} box PLASTIC_UP_BOX color 0 labelsize 12 labelcolor 7 align 212 when 1
+      }
+      Fl_Slider VUI1 {
+        callback {o->value(MidiInLevel);}
+        xywh {795 35 25 50} type {Vert Fill} color 30 selection_color 79 minimum 127 maximum 0 step 1
+      }
+      Fl_Box {} {
+        label {MIDI IN}
+        xywh {725 65 65 20} labelsize 9 align 64
+      }
+      Fl_Box DMIN1 {
+        callback {o->label(hor->MID);}
+        xywh {530 35 260 25} box PLASTIC_DOWN_BOX color 40 labelsize 12 align 84
+        code0 {o->label(hor->MID);}
+      }
+      Fl_Box DispNumber {
+        label {--}
+        xywh {15 100 75 60} box SHADOW_BOX color 0 selection_color 7 labeltype ENGRAVED_LABEL labelfont 14 labelsize 37 labelcolor 128 align 80
+      }
+      Fl_Counter Transpose {
+        callback {hor->transpose = (int) o->value();
+calbtrans();
+Actu();}
+        xywh {395 285 60 20} type Simple labeltype EMBOSSED_LABEL labelcolor 208 align 4 when 4 minimum -48 maximum 48 step 1
+      }
+      Fl_Slider Master {
+        label Master
+        callback {hor->Master_Volume = (float) o->value() / 100.0;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {535 100 55 190} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 1 labelsize 10 labelcolor 4 minimum 100 maximum 0 step 1 value 70
+        class Drawbar
+      }
+      Fl_Input Nombre {
+        label {  }
+        callback {hor->a.nombre=(char*) o->value();
+strncpy(hor->a.Name,hor->a.nombre,24);
+Actu();}
+        xywh {5 35 300 50} box PLASTIC_DOWN_BOX color 219 labeltype ENGRAVED_LABEL labelsize 21 labelcolor 208 align 68 textsize 29 textcolor 88
+      }
+      Fl_Counter MasterT {
+        callback {hor->mastertune = 1 + (float) (o->value() / 1600);
+calbtune();}
+        xywh {395 255 60 20} type Simple labeltype EMBOSSED_LABEL labelcolor 208 align 4 minimum -99 maximum 99 step 1
+      }
+      Fl_Slider V1 {
+        callback {hor->a.Operator[1].volumen = (float) o->value() / 100.0;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {2 335 55 205} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 63 labeltype ENGRAVED_LABEL labelcolor 4 align 66 maximum 99 step 1
+        class Drawbar
+      }
+      Fl_Slider V2 {
+        callback {hor->a.Operator[2].volumen = (float) o->value() / 100.0;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {61 335 55 205} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 63 labeltype ENGRAVED_LABEL labelcolor 4 align 66 maximum 99 step 1
+        class Drawbar
+      }
+      Fl_Slider V3 {
+        callback {hor->a.Operator[3].volumen = (float) o->value() / 100.0;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {120 335 55 205} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 63 labeltype ENGRAVED_LABEL labelcolor 4 align 66 maximum 99 step 1
+        class Drawbar
+      }
+      Fl_Slider V4 {
+        callback {hor->a.Operator[4].volumen = (float) o->value() / 100.0;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {179 335 55 205} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 63 labeltype ENGRAVED_LABEL labelcolor 4 align 66 maximum 99 step 1
+        class Drawbar
+      }
+      Fl_Slider V5 {
+        callback {hor->a.Operator[5].volumen = (float) o->value() / 100.0;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {238 335 55 205} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 63 labeltype ENGRAVED_LABEL labelcolor 4 align 66 maximum 99 step 1
+        class Drawbar
+      }
+      Fl_Slider V6 {
+        callback {hor->a.Operator[6].volumen = (float) o->value() / 100.0;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {297 335 55 205} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 63 labeltype ENGRAVED_LABEL labelcolor 4 align 66 maximum 99 step 1
+        class Drawbar
+      }
+      Fl_Slider V7 {
+        callback {hor->a.Operator[7].volumen = (float) o->value() / 100.0;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {356 335 55 205} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 63 labeltype ENGRAVED_LABEL labelcolor 4 align 66 maximum 99 step 1
+        class Drawbar
+      }
+      Fl_Slider V8 {
+        callback {hor->a.Operator[8].volumen = (float) o->value() / 100.0;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {415 335 55 205} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 63 labeltype ENGRAVED_LABEL labelcolor 4 align 66 maximum 99 step 1
+        class Drawbar
+      }
+      Fl_Slider V9 {
+        callback {hor->a.Operator[9].volumen = (float) o->value() / 100.0;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {474 335 55 205} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 63 labeltype ENGRAVED_LABEL labelcolor 4 align 66 maximum 99 step 1
+        class Drawbar
+      }
+      Fl_Slider V10 {
+        callback {hor->a.Operator[10].volumen = (float) o->value() / 100.0;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {533 335 55 205} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 63 labeltype ENGRAVED_LABEL labelcolor 4 align 66 maximum 99 step 1
+        class Drawbar
+      }
+      Fl_Dial Detune {
+        label Detune
+        callback {hor->a.detune = (float) o->value();
+D_FFval->value(hor->a.Operator[(int)D_Freq_F->value()].harmonic_fine);
+int i;
+float k;
+for (i=1; i<=10; i++)
+{
+
+k = (16 -hor->a.Operator[i].harmonic);
+if (k==0) k=1.0;
+
+hor->a.Operator[i].harmonic_fine = (float) ((o->value()) / (k * i * 1000.0));
+ 
+}
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {180 250 45 45} box OSHADOW_BOX color 47 labelsize 10 labelcolor 4 when 4 maximum 100 step 0.1
+        class Rueda
+      }
+      Fl_Dial LFOSpeed {
+        label Speed
+        callback {hor->a.Rotary_LFO_Speed = (float) o->value();
+if (hor->a.Speed_Sync) Syncronize(2,(float) o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {180 95 45 45} box OSHADOW_BOX color 47 labelsize 10 labelcolor 4 maximum 40 step 0.1
+        class Rueda
+      }
+      Fl_Dial LFOPitch {
+        label Tremolo
+        callback {hor->a.LFOpitch = (float) o->value();
+hor->Calc_LFO_Frequency();
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {115 250 45 45} box OSHADOW_BOX color 47 labelsize 10 labelcolor 4 maximum 200 step 1
+        class Rueda
+      }
+      Fl_Dial PLFOSpeed {
+        label Speed
+        callback {hor->a.Pitch_LFO_Speed = (float) o->value();
+
+if (hor->a.Speed_Sync) Syncronize(1,(float) o->value()); 
+
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {115 95 45 45} box OSHADOW_BOX color 47 labelsize 10 labelcolor 4 maximum 40 step 0.01
+        class Rueda
+      }
+      Fl_Dial PLFODelay {
+        label Delay
+        callback {hor->a.Pitch_LFO_Delay = (float) o->value() / 10;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {115 190 45 45} box OSHADOW_BOX color 47 labelsize 10 labelcolor 4 maximum 99 step 1
+        class Rueda
+      }
+      Fl_Counter EchoVol {
+        callback {hor->a.Delay_Volume = (float) o->value() / 100;
+Actu();}
+        xywh {310 285 65 20} type Simple labelcolor 208 when 4 minimum 0 maximum 99 step 1
+      }
+      Fl_Counter EchoDelay {
+        callback {hor->a.Delay_Delay = (float) o->value() * 65100;
+Actu();}
+        xywh {310 255 65 20} type Simple labelcolor 208 when 4 minimum 0 maximum 1 step 0.01
+      }
+      Fl_Slider H1 {
+        callback {hor->a.Operator[1].harmonic = (int) o->value();
+NV1->value(hor->lasfreq[(int) o->value()]);
+
+Actu();}
+        xywh {2 565 55 25} type {Horz Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labeltype ENGRAVED_LABEL labelcolor 4 align 1 when 4 minimum 1 maximum 22 step 1
+      }
+      Fl_Slider H2 {
+        callback {hor->a.Operator[2].harmonic = (int) o->value();
+NV2->value(hor->lasfreq[(int) o->value()]);
+Actu();}
+        xywh {61 565 55 25} type {Horz Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labeltype ENGRAVED_LABEL labelcolor 4 when 4 minimum 1 maximum 22 step 1
+      }
+      Fl_Slider H3 {
+        callback {hor->a.Operator[3].harmonic = (int) o->value();
+NV3->value(hor->lasfreq[(int) o->value()]);
+
+Actu();}
+        xywh {120 565 55 25} type {Horz Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labeltype ENGRAVED_LABEL labelcolor 4 when 4 minimum 1 maximum 22 step 1
+      }
+      Fl_Slider H4 {
+        callback {hor->a.Operator[4].harmonic = (int) o->value();
+NV4->value(hor->lasfreq[(int) o->value()]);
+
+Actu();}
+        xywh {179 565 55 25} type {Horz Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labeltype ENGRAVED_LABEL labelcolor 4 when 4 minimum 1 maximum 22 step 1
+      }
+      Fl_Slider H5 {
+        callback {hor->a.Operator[5].harmonic = (int) o->value();
+NV5->value(hor->lasfreq[(int) o->value()]);
+Actu();}
+        xywh {238 565 55 25} type {Horz Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labeltype ENGRAVED_LABEL labelcolor 4 when 4 minimum 1 maximum 22 step 1
+      }
+      Fl_Slider H6 {
+        callback {hor->a.Operator[6].harmonic = (int) o->value();
+NV6->value(hor->lasfreq[(int) o->value()]);
+Actu();}
+        xywh {297 565 55 25} type {Horz Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labeltype ENGRAVED_LABEL labelcolor 4 when 4 minimum 1 maximum 22 step 1
+      }
+      Fl_Slider H7 {
+        callback {hor->a.Operator[7].harmonic = (int) o->value();
+NV7->value(hor->lasfreq[(int) o->value()]);
+
+Actu();}
+        xywh {356 565 55 25} type {Horz Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labeltype ENGRAVED_LABEL labelcolor 4 when 4 minimum 1 maximum 22 step 1
+      }
+      Fl_Slider H8 {
+        callback {hor->a.Operator[8].harmonic = (int) o->value();
+NV8->value(hor->lasfreq[(int) o->value()]);
+
+Actu();}
+        xywh {415 565 55 25} type {Horz Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labeltype ENGRAVED_LABEL labelcolor 4 when 4 minimum 1 maximum 22 step 1
+      }
+      Fl_Slider H9 {
+        callback {hor->a.Operator[9].harmonic = (int) o->value();
+NV9->value(hor->lasfreq[(int) o->value()]);
+Actu();}
+        xywh {474 565 55 25} type {Horz Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labeltype ENGRAVED_LABEL labelcolor 4 when 4 minimum 1 maximum 22 step 1
+      }
+      Fl_Slider H10 {
+        callback {hor->a.Operator[10].harmonic = (int) o->value();
+NV10->value(hor->lasfreq[(int) o->value()]);
+Actu();}
+        xywh {533 565 55 25} type {Horz Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labeltype ENGRAVED_LABEL labelcolor 4 when 4 minimum 1 maximum 22 step 1
+      }
+      Fl_Button Rota {
+        label Rotary
+        callback {hor->a.E_Rotary_On=o->value();
+Actu();}
+        xywh {180 160 45 30} type Toggle box PLASTIC_UP_BOX color 31 selection_color 135 labelsize 9 align 64
+      }
+      Fl_Dial ELFOSpeed {
+        label Speed
+        callback {hor->a.Chorus_LFO_Speed = (float) o->value();
+if (hor->a.Speed_Sync) Syncronize(3,(float) o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {245 140 45 45} box OSHADOW_BOX color 47 labelsize 10 labelcolor 4 maximum 40 step 0.01
+        class Rueda
+      }
+      Fl_Slider ELFOAmplitude {
+        label Amp
+        callback {hor->a.Chorus_LFO_Amplitude = (float) o->value();
+hor->Calc_Chorus_LFO_Frequency();
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {310 115 30 90} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 1 labelsize 10 labelcolor 4 align 65 maximum 99 step 1
+        class Drawbar
+      }
+      Fl_Slider POPO {
+        label {Del.}
+        callback {hor->a.Chorus_Delay = (float) o->value();
+
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {345 115 30 90} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labelsize 10 labelcolor 4 align 65 maximum 99 step 0.1
+        class Drawbar
+      }
+      Fl_Counter ChorVol {
+        callback {hor->a.Chorus_Volume = (float) o->value() / 100.0;
+Actu();}
+        xywh {310 210 65 20} type Simple labelcolor 208 when 4 minimum 0 maximum 99 step 1
+      }
+      Fl_Button Split {
+        label Split
+        callback {hor->split=o->value();}
+        xywh {765 555 45 30} type Toggle box PLASTIC_UP_BOX color 31 selection_color 135 labelsize 9 align 64
+      }
+      Fl_Box DMIN2 {
+        callback {switch (hor->Salida)
+{
+ case 1:
+        o->label("OSS");
+        break;
+ case 2:
+        o->label("Alsa");
+        break;
+ case 3:
+        o->label("Jack");
+        break;
+}}
+        xywh {530 60 85 25} box PLASTIC_DOWN_BOX color 40 labelsize 12 align 84
+      }
+      Fl_Button EchoOn {
+        label Delay
+        callback {hor->a.E_Delay_On =  o->value();
+hor->Clean_Buffer_Effects();
+Actu();}
+        xywh {240 245 55 30} type Toggle box PLASTIC_UP_BOX color 31 selection_color 135 labelsize 9 align 64
+      }
+      Fl_Button ChorusOn {
+        label Chorus
+        callback {hor->a.E_Chorus_On =  o->value();
+hor->Clean_Buffer_Effects();
+Actu();}
+        xywh {240 100 55 30} type Toggle box PLASTIC_UP_BOX color 31 selection_color 135 labelsize 8 align 64
+      }
+      Fl_Group {} {
+        xywh {390 135 72 100}
+      } {
+        Fl_Button R1 {
+          label 1
+          callback {hor->a.Reverb_Preset = 1;
+hor->PutReverb(1);
+Actu();}
+          xywh {397 135 25 20} type Radio box PLASTIC_UP_BOX color 31 selection_color 1 labeltype ENGRAVED_LABEL labelsize 9 deactivate
+        }
+        Fl_Button R2 {
+          label 2
+          callback {hor->a.Reverb_Preset = 2;
+hor->PutReverb(2);
+Actu();}
+          xywh {427 135 25 20} type Radio box PLASTIC_UP_BOX color 31 selection_color 1 labeltype ENGRAVED_LABEL labelsize 9 deactivate
+        }
+        Fl_Button R3 {
+          label 3
+          callback {hor->a.Reverb_Preset = 3;
+hor->PutReverb(3);
+Actu();}
+          xywh {397 160 25 20} type Radio box PLASTIC_UP_BOX color 31 selection_color 1 labeltype ENGRAVED_LABEL labelsize 9 deactivate
+        }
+        Fl_Button R4 {
+          label 4
+          callback {hor->a.Reverb_Preset = 4;
+hor->PutReverb(4);
+Actu();}
+          xywh {427 160 25 20} type Radio box PLASTIC_UP_BOX color 31 selection_color 1 labeltype ENGRAVED_LABEL labelsize 9 deactivate
+        }
+        Fl_Button R5 {
+          label 5
+          callback {hor->a.Reverb_Preset = 5;
+hor->PutReverb(5);
+Actu();}
+          xywh {397 185 25 20} type Radio box PLASTIC_UP_BOX color 31 selection_color 1 labeltype ENGRAVED_LABEL labelsize 9 deactivate
+        }
+        Fl_Button R6 {
+          label 6
+          callback {hor->a.Reverb_Preset = 6;
+hor->PutReverb(6);
+Actu();}
+          xywh {427 185 25 20} type Radio box PLASTIC_UP_BOX color 31 selection_color 1 labeltype ENGRAVED_LABEL labelsize 9 deactivate
+        }
+        Fl_Button R7 {
+          label 7
+          callback {hor->a.Reverb_Preset = 7;
+hor->PutReverb(7);
+Actu();}
+          xywh {397 210 25 20} type Radio box PLASTIC_UP_BOX color 31 selection_color 1 labeltype ENGRAVED_LABEL labelsize 9 deactivate
+        }
+        Fl_Button R8 {
+          label 8
+          callback {hor->a.Reverb_Preset = 8;
+hor->PutReverb(8);
+Actu();}
+          xywh {427 210 25 20} type Radio box PLASTIC_UP_BOX color 31 selection_color 1 labeltype ENGRAVED_LABEL labelsize 9 deactivate
+        }
+      }
+      Fl_Button Rev {
+        label Reverb
+        callback {if (o->value()== 0) 
+{
+hor->a.E_Reverb_On= 0;
+R1->value(0);
+R2->value(0);
+R3->value(0);
+R4->value(0);
+R5->value(0);
+R6->value(0);
+R7->value(0);
+R8->value(0);
+R1->deactivate();
+R2->deactivate();
+R3->deactivate();
+R4->deactivate();
+R5->deactivate();
+R6->deactivate();
+R7->deactivate();
+R8->deactivate();
+
+
+}
+else
+{
+hor->a.E_Reverb_On = 1;
+R1->activate();
+R2->activate();
+R3->activate();
+R4->activate();
+R5->activate();
+R6->activate();
+R7->activate();
+R8->activate();
+if (hor->a.Reverb_Preset==0) hor->a.Reverb_Preset = 1;
+
+switch((int) hor->a.Reverb_Preset)
+{
+case 1:
+R1->setonly();
+break;
+case 2:
+R2->setonly();
+break;
+case 3:
+R3->setonly();
+break;
+case 4:
+R4->setonly();
+break;
+case 5:
+R5->setonly();
+break;
+case 6:
+R6->setonly();
+break;
+case 7:
+R7->setonly();
+break;
+case 8:
+R8->setonly();
+break;
+}
+}
+hor->Clean_Buffer_Effects();
+Actu();}
+        xywh {397 100 55 30} type Toggle box PLASTIC_UP_BOX color 31 selection_color 3 labelsize 8 align 64
+      }
+      Fl_Slider RitVol {
+        label Drums
+        callback {hor->Rhythm_Volume = o->value();}
+        xywh {600 415 40 155} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labelsize 10 labelcolor 4 align 194 minimum 0.99 maximum 0 step 0.01 value 0.5
+      }
+      Fl_Dial Tempo {
+        label Tempo
+        callback {hor->tempo = (float) o->value();
+hor->frame_total_size = (int) (hor->tempo * hor->sfinfo.frames);
+hor->fractional_position = hor->frame_total_size /(4 * hor->quarter_note * hor->bars);}
+        xywh {650 525 45 45} box OSHADOW_BOX color 47 labelsize 10 labelcolor 4 align 194 minimum 0.4 maximum 2.7 step 0.01 value 1 deactivate
+      }
+      Fl_Slider VUI2 {
+        callback {o->value(BarLead);}
+        xywh {645 510 15 15} type {Vert Fill} color 30 selection_color 1 minimum 127 maximum 0 step 1
+      }
+      Fl_Button RitOn {
+        label {Stop/Cont}
+        callback {StStRiton->value(o->value());
+BarLead = 0;
+hor->Rhythm_On =  o->value();
+VUI2->value(0);}
+        xywh {645 465 60 35} type Toggle box PLASTIC_UP_BOX color 31 selection_color 135 labelsize 8 align 64
+      }
+      Fl_Button StStRiton {
+        label {Start/Stop}
+        callback {if (Selected_Rhythm != 0)
+{
+// int readcounts = sf_seek (hor->infile, 0, SEEK_SET);
+RitOn->value(o->value());
+BarLead = 0;
+hor->Rhythm_On =  o->value();
+}
+
+VUI2->value(0);}
+        xywh {645 425 60 35} type Toggle box PLASTIC_UP_BOX color 31 selection_color 135 labelsize 8 align 64
+      }
+      Fl_Box {} {
+        xywh {595 95 230 310} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL labelsize 17 labelcolor 4 align 1
+      }
+      Fl_Group RitButtons {
+        xywh {595 88 230 317} box PLASTIC_UP_BOX color 0
+      } {
+        Fl_Button Rit1 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 1;
+if (Fl::event_button()==3) 
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {605 105 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit2 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 2;
+if (Fl::event_button()==3)
+{
+ GetRit(Selected_Rhythm);
+ EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {605 135 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit3 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 3;
+if (Fl::event_button()==3)
+{
+ GetRit(Selected_Rhythm);
+ EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {605 165 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit4 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 4;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {605 195 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit5 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 5;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {605 225 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit6 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 6;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {605 255 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit7 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 7;
+if (Fl::event_button()==3) 
+{
+EditRit(Selected_Rhythm);
+GetRit(Selected_Rhythm);
+}
+
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {605 285 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit8 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 8;
+if (Fl::event_button()==3)
+{
+EditRit(Selected_Rhythm);
+GetRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {605 315 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit9 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 9;
+if (Fl::event_button()==3)
+{
+EditRit(Selected_Rhythm);
+GetRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {605 345 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit10 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 10;
+if (Fl::event_button()==3)
+{
+EditRit(Selected_Rhythm);
+GetRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {605 375 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit11 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 11;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {720 105 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit12 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 12;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {720 135 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit13 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 13;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {720 165 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit14 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 14;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {720 195 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit15 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 15;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {720 226 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit16 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 16;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {720 255 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit17 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 17;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {720 285 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit18 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 18;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {720 315 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit19 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 19;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {720 345 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Rit20 {
+          callback {ApagaTodo();
+o->value(1);
+Selected_Rhythm = 20;
+if (Fl::event_button()==3)
+{
+GetRit(Selected_Rhythm);
+EditRit(Selected_Rhythm);
+}
+if (Fl::event_button()==1) GetRit(Selected_Rhythm);}
+          tooltip {Right Click Edit -  Left Click Select} xywh {720 375 95 25} type Toggle box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+      }
+      Fl_Slider BassVol {
+        label Bass
+        callback {hor->Bass_Volume = o->value();}
+        xywh {710 415 40 155} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 3 labelsize 10 labelcolor 4 align 194 minimum 0.99 maximum 0 step 0.01 value 0.5
+      }
+      Fl_Button Basson {
+        label Bass
+        callback {//int readcounts = sf_seek (hor->infileb, 0, SEEK_SET);
+BarLead = 0;
+hor->split = o->value();
+Split->value(o->value());
+hor->Bass_On =  o->value();}
+        xywh {755 425 65 35} type Toggle box PLASTIC_UP_BOX color 31 selection_color 135 labelsize 8 align 64
+      }
+      Fl_Group {} {
+        xywh {755 465 70 95}
+      } {
+        Fl_Button Bass1 {
+          label Acoustic
+          callback {SetBassType(0);}
+          xywh {755 465 65 25} type Radio box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Bass2 {
+          label Electric
+          callback {SetBassType(1);}
+          xywh {755 495 65 25} type Radio box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+        Fl_Button Bass3 {
+          label Fretless
+          callback {SetBassType(2);}
+          xywh {755 525 65 25} type Radio box PLASTIC_UP_BOX color 31 selection_color 63 labeltype ENGRAVED_LABEL labelsize 11 align 64
+        }
+      }
+      Fl_Box ACI {
+        xywh {315 35 205 50} box PLASTIC_DOWN_BOX color 219 labeltype ENGRAVED_LABEL labelfont 1 labelsize 22 align 80
+      }
+      Fl_Value_Output NV1 {
+        xywh {2 543 55 20} color 47 selection_color 1 align 216 maximum 16 step 0.5 textsize 12 textcolor 4
+      }
+      Fl_Value_Output NV2 {
+        xywh {61 543 55 20} color 47 selection_color 1 align 216 maximum 16 step 0.5 textsize 12 textcolor 4
+      }
+      Fl_Value_Output NV3 {
+        xywh {120 543 55 20} color 47 selection_color 1 align 216 maximum 16 step 0.5 textsize 12 textcolor 4
+      }
+      Fl_Value_Output NV4 {
+        xywh {179 543 55 20} color 47 selection_color 1 align 216 maximum 16 step 0.5 textsize 12 textcolor 4
+      }
+      Fl_Value_Output NV5 {
+        xywh {238 543 55 20} color 47 selection_color 1 align 216 maximum 16 step 0.5 textsize 12 textcolor 4
+      }
+      Fl_Value_Output NV6 {
+        xywh {297 543 55 20} color 47 selection_color 1 align 216 maximum 16 step 0.5 textsize 12 textcolor 4
+      }
+      Fl_Value_Output NV7 {
+        xywh {356 543 55 20} color 47 selection_color 1 align 216 maximum 16 step 0.5 textsize 12 textcolor 4
+      }
+      Fl_Value_Output NV8 {
+        xywh {415 543 55 20} color 47 selection_color 1 align 216 maximum 16 step 0.5 textsize 12 textcolor 4
+      }
+      Fl_Value_Output NV9 {
+        xywh {474 543 55 20} color 47 selection_color 1 align 216 maximum 16 step 0.5 textsize 12 textcolor 4
+      }
+      Fl_Value_Output NV10 {
+        xywh {533 543 55 20} color 47 selection_color 1 align 216 maximum 16 step 0.5 textsize 12 textcolor 4
+      }
+      Fl_Counter CPrograma {
+        callback {hor->cpreset = (int) o->value();
+PutCombi(hor->cpreset);
+Actu();}
+        xywh {15 165 75 25} type Simple labeltype EMBOSSED_LABEL labelcolor 208 align 4 when 4 minimum 1 maximum 32 step 1
+      }
+      Fl_Slider OMaster {
+        label Organ
+        callback {hor->a.Organ_Master_Volume = (float) o->value() / 100.0;
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {470 100 55 190} type {Vert Knob} box PLASTIC_DOWN_BOX color 0 selection_color 2 labelsize 10 labelcolor 4 minimum 100 maximum 0 step 1 value 70
+        class Drawbar
+      }
+      Fl_Light_Button Mar1 {
+        label Perc
+        callback {hor->a.Operator[1].marimba=o->value();}
+        xywh {2 317 55 15} box PLASTIC_UP_BOX labelsize 9 align 212
+      }
+      Fl_Light_Button Mar2 {
+        label Perc
+        callback {hor->a.Operator[2].marimba=o->value();}
+        xywh {61 317 55 15} box PLASTIC_UP_BOX labelsize 9 align 212
+      }
+      Fl_Light_Button Mar3 {
+        label Perc
+        callback {hor->a.Operator[3].marimba=o->value();}
+        xywh {120 317 55 15} box PLASTIC_UP_BOX labelsize 9 align 212
+      }
+      Fl_Light_Button Mar4 {
+        label Perc
+        callback {hor->a.Operator[4].marimba=o->value();}
+        xywh {179 317 55 15} box PLASTIC_UP_BOX labelsize 9 align 212
+      }
+      Fl_Light_Button Mar5 {
+        label Perc
+        callback {hor->a.Operator[5].marimba=o->value();}
+        xywh {238 317 55 15} box PLASTIC_UP_BOX labelsize 9 align 212
+      }
+      Fl_Light_Button Mar6 {
+        label Perc
+        callback {hor->a.Operator[6].marimba=o->value();}
+        xywh {297 317 55 15} box PLASTIC_UP_BOX labelsize 9 align 212
+      }
+      Fl_Light_Button Mar7 {
+        label Perc
+        callback {hor->a.Operator[7].marimba=o->value();}
+        xywh {356 317 55 15} box PLASTIC_UP_BOX labelsize 9 align 212
+      }
+      Fl_Light_Button Mar8 {
+        label Perc
+        callback {hor->a.Operator[8].marimba=o->value();}
+        xywh {415 317 55 15} box PLASTIC_UP_BOX labelsize 9 align 212
+      }
+      Fl_Light_Button Mar9 {
+        label Perc
+        callback {hor->a.Operator[9].marimba=o->value();}
+        xywh {474 317 55 15} box PLASTIC_UP_BOX labelsize 9 align 212
+      }
+      Fl_Light_Button Mar10 {
+        label Perc
+        callback {hor->a.Operator[10].marimba=o->value();}
+        xywh {533 317 55 15} box PLASTIC_UP_BOX labelsize 9 align 212
+      }
+      Fl_Button BClick {
+        label Click
+        callback {hor->a.Click=o->value();
+Actu();}
+        xywh {180 205 45 30} type Toggle box PLASTIC_UP_BOX color 31 selection_color 5 labelsize 9 align 64
+      }
+      Fl_Button BSync_Speed {
+        label Sync
+        callback {hor->a.Speed_Sync=o->value();
+if(o->value()) Syncronize(0,0);
+Actu();}
+        xywh {115 160 45 20} type Toggle box PLASTIC_UP_BOX color 31 selection_color 4 labelsize 9 align 64
+      }
+    }
+    Fl_Window aboutwindow {
+      label {About...}
+      callback {aboutwindow->hide();} open
+      xywh {1703 120 380 375} type Double box PLASTIC_DOWN_BOX color 32 visible
+    } {
+      Fl_Box {} {
+        image {horgand128.xpm} xywh {175 13 195 107} labelsize 18
+      }
+      Fl_Box {} {
+        label Horgand
+        xywh {55 35 135 40} labelfont 1 labelsize 24 align 64
+      }
+      Fl_Box {} {
+        label {Copyright (C) 2003-2009 by Josep Andreu
+     (Holborn) 
+      holborn@@telefonica.net } selected
+        xywh {10 115 345 70} labelfont 1 labelcolor 18 align 80
+      }
+      Fl_Box {} {
+        label {This is free software. you may redistribute and/or modify it under the terms of the version 2 of the GNU General Public License as published by the Free Software Fundation.
+ This program comes with 
+ ABSOLUTE NO WARRANTY. 
+ See the version 2 of the 
+ GNU General Public License for details.}
+        xywh {20 210 340 115} labelfont 1 labelsize 11 align 210
+      }
+      Fl_Button {} {
+        label OK
+        callback {aboutwindow->do_callback();}
+        xywh {160 330 65 40} shortcut 0xff0d
+      }
+      Fl_Box {} {
+        label {http://horgand.berlios.de}
+        xywh {15 180 345 20} labelfont 1 labelsize 16 labelcolor 4 align 64
+      }
+      Fl_Box {} {
+        label {(Visite the website for new sounds)}
+        xywh {20 195 345 20} labelfont 1 labelsize 10 align 64
+      }
+    }
+    Fl_Window Settingswindow {
+      label Settings
+      callback {Settingswindow->hide();}
+      xywh {1529 135 495 310} type Double hide
+    } {
+      Fl_Box {} {
+        label {Midi Input to:}
+        xywh {5 0 151 30}
+      }
+      Fl_Button SClose {
+        label Close
+        callback {Settingswindow->do_callback();}
+        xywh {350 180 120 30} shortcut 0xff0d
+      }
+      Fl_Button {} {
+        label Save
+        callback {Guarda_Pref(1);
+fl_message("Audio device changes will take effect the next time you restart the program");
+Settingswindow->hide();}
+        xywh {350 145 120 30}
+      }
+      Fl_Browser BMidiIn {
+        callback {int valor;
+valor = (int) o->value();
+strcpy(hor->MID,o->text(valor));
+o->select(valor,1);
+hor->Conecta();
+DMIN1->do_callback();}
+        xywh {5 25 295 185} type Hold selection_color 0
+      }
+      Fl_Group {} {
+        label {Audio Output} open
+        xywh {315 25 155 95} box DOWN_BOX color 25
+      } {
+        Fl_Check_Button OSS {
+          label { OSS}
+          xywh {340 30 100 25} type Radio down_box DOWN_BOX align 84
+        }
+        Fl_Check_Button Alsa {
+          label { Alsa}
+          xywh {340 60 100 25} type Radio down_box DOWN_BOX align 84
+        }
+        Fl_Check_Button Jack {
+          label { Jack}
+          xywh {340 90 100 25} type Radio down_box DOWN_BOX align 84
+        }
+      }
+      Fl_File_Input BFiname {
+        label {  Bank Filename}
+        xywh {0 230 390 30} labelsize 12 align 5
+      }
+      Fl_Button {} {
+        label Browse
+        callback {char *filename;
+filename=fl_file_chooser("Browse:","(*.horeb)",NULL,0);
+if (filename==NULL) return;
+filename=fl_filename_setext(filename,".horeb");
+BFiname->value(filename);
+strcpy(hor->BankFilename,filename);}
+        xywh {405 230 65 30}
+      }
+      Fl_File_Input RFiname {
+        label {  Rhythm Filename}
+        xywh {0 280 390 30} labelsize 12 align 5
+      }
+      Fl_Button {} {
+        label Browse
+        callback {char *filename;
+filename=fl_file_chooser("Browse:","(*.txt)",NULL,0);
+if (filename==NULL) return;
+filename=fl_filename_setext(filename,".txt");
+RFiname->value(filename);
+strcpy(hor->RhythmFilename,filename);}
+        xywh {405 270 65 30}
+      }
+    }
+    Fl_Window HORBank {
+      label {horgand Bank}
+      callback {Guarda_Pref(2);
+HORBank->hide();
+Fl::focus(PANICO);}
+      tooltip {Right Click Get  - Left Click Put} xywh {411 232 745 420} type Double hide
+    } {
+      Fl_Button BClose {
+        label Close
+        callback {HORBank->do_callback();}
+        xywh {330 375 145 40} box PLASTIC_UP_BOX shortcut 0xff0d labeltype ENGRAVED_LABEL
+      }
+      Fl_Menu_Bar {} {
+        xywh {0 0 745 30}
+      } {
+        Submenu BFile {
+          label {&File} open
+          xywh {0 0 100 20}
+        } {
+          MenuItem {} {
+            label New
+            callback {hor->New_Bank();
+metebanco();
+Undo();}
+            xywh {0 0 45 26} divider
+          }
+          MenuItem BLoad {
+            label {&Load Bank}
+            callback {char *filename;
+filename=fl_file_chooser("Load Bank:","(*.horeb)",NULL,0);
+if (filename==NULL) return;
+filename=fl_filename_setext(filename,".horeb");
+hor->loadbank(filename);
+metebanco();
+PutCombi(1);}
+            xywh {0 0 100 20}
+          }
+          MenuItem BSave {
+            label {&Save Bank}
+            callback {char *filename;
+\#define EXT ".horeb"
+filename=fl_file_chooser("Save Bank:","(*"EXT")",hor->SavedBank,0);
+if (filename==NULL) return;
+filename=fl_filename_setext(filename,EXT);
+\#undef EXT
+hor->savebank(filename);}
+            xywh {0 0 100 20} divider
+          }
+          MenuItem {} {
+            label {&Close}
+            callback {HORBank->do_callback();}
+            xywh {0 0 100 20}
+          }
+        }
+      }
+      Fl_Tabs {} {open
+        xywh {0 30 745 335} labelsize 18
+      } {
+        Fl_Group {} {
+          label {Active Bank} open
+          xywh {10 55 720 305}
+        } {
+          Fl_Group {} {
+            xywh {20 125 710 235}
+          } {
+            Fl_Button Banco1 {
+              callback {if (Fl::event_button()==3) GetCombi(1);
+if (Fl::event_button()==1) PutCombi(1);
+o->label(hor->Banco[1].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {60 125 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 1
+              xywh {20 125 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco2 {
+              callback {if (Fl::event_button()==3) GetCombi(2);
+if (Fl::event_button()==1) PutCombi(2);
+o->label(hor->Banco[2].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {235 125 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 2
+              xywh {205 125 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco3 {
+              callback {if (Fl::event_button()==3) GetCombi(3);
+if (Fl::event_button()==1) PutCombi(3);
+o->label(hor->Banco[3].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {410 125 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 3
+              xywh {380 125 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco4 {
+              callback {if (Fl::event_button()==3) GetCombi(4);
+if (Fl::event_button()==1) PutCombi(4);
+o->label(hor->Banco[4].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {585 125 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 4
+              xywh {555 125 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco5 {
+              callback {if (Fl::event_button()==3) GetCombi(5);
+if (Fl::event_button()==1) PutCombi(5);
+o->label(hor->Banco[5].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {60 155 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 5
+              xywh {20 155 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco6 {
+              callback {if (Fl::event_button()==3) GetCombi(6);
+if (Fl::event_button()==1) PutCombi(6);
+o->label(hor->Banco[6].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {235 155 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 6
+              xywh {205 155 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco7 {
+              callback {if (Fl::event_button()==3) GetCombi(7);
+if (Fl::event_button()==1) PutCombi(7);
+o->label(hor->Banco[7].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {410 155 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 7
+              xywh {380 155 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco8 {
+              callback {if (Fl::event_button()==3) GetCombi(8);
+if (Fl::event_button()==1) PutCombi(8);
+o->label(hor->Banco[8].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {585 155 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 8
+              xywh {555 155 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco9 {
+              callback {if (Fl::event_button()==3) GetCombi(9);
+if (Fl::event_button()==1) PutCombi(9);
+o->label(hor->Banco[9].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {60 185 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 9
+              xywh {20 185 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco10 {
+              callback {if (Fl::event_button()==3) GetCombi(10);
+if (Fl::event_button()==1) PutCombi(10);
+o->label(hor->Banco[10].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {235 185 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 10
+              xywh {205 185 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco11 {
+              callback {if (Fl::event_button()==3) GetCombi(11);
+if (Fl::event_button()==1) PutCombi(11);
+o->label(hor->Banco[11].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {410 185 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 11
+              xywh {380 185 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco12 {
+              callback {if (Fl::event_button()==3) GetCombi(12);
+if (Fl::event_button()==1) PutCombi(12);
+o->label(hor->Banco[12].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {585 185 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 12
+              xywh {555 185 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco13 {
+              callback {if (Fl::event_button()==3) GetCombi(13);
+if (Fl::event_button()==1) PutCombi(13);
+o->label(hor->Banco[13].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {60 215 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 13
+              xywh {20 215 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco14 {
+              callback {if (Fl::event_button()==3) GetCombi(14);
+if (Fl::event_button()==1) PutCombi(14);
+o->label(hor->Banco[14].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {235 215 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 14
+              xywh {205 215 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco15 {
+              callback {if (Fl::event_button()==3) GetCombi(15);
+if (Fl::event_button()==1) PutCombi(15);
+o->label(hor->Banco[15].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {410 215 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 15
+              xywh {380 215 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco16 {
+              callback {if (Fl::event_button()==3) GetCombi(16);
+if (Fl::event_button()==1) PutCombi(16);
+o->label(hor->Banco[16].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {585 215 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 16
+              xywh {555 215 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco17 {
+              callback {if (Fl::event_button()==3) GetCombi(17);
+if (Fl::event_button()==1) PutCombi(17);
+o->label(hor->Banco[17].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {60 245 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 17
+              xywh {20 245 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco18 {
+              callback {if (Fl::event_button()==3) GetCombi(18);
+if (Fl::event_button()==1) PutCombi(18);
+o->label(hor->Banco[18].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {235 245 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 18
+              xywh {205 245 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco19 {
+              callback {if (Fl::event_button()==3) GetCombi(19);
+if (Fl::event_button()==1) PutCombi(19);
+o->label(hor->Banco[19].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {410 245 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 19
+              xywh {380 245 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco20 {
+              callback {if (Fl::event_button()==3) GetCombi(20);
+if (Fl::event_button()==1) PutCombi(20);
+o->label(hor->Banco[20].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {585 245 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 20
+              xywh {555 245 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco21 {
+              callback {if (Fl::event_button()==3) GetCombi(21);
+if (Fl::event_button()==1) PutCombi(21);
+o->label(hor->Banco[21].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {60 275 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 21
+              xywh {20 275 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco22 {
+              callback {if (Fl::event_button()==3) GetCombi(22);
+if (Fl::event_button()==1) PutCombi(22);
+o->label(hor->Banco[22].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {235 275 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 22
+              xywh {205 275 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco23 {
+              callback {if (Fl::event_button()==3) GetCombi(23);
+if (Fl::event_button()==1) PutCombi(23);
+o->label(hor->Banco[23].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {410 275 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 23
+              xywh {380 275 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco24 {
+              callback {if (Fl::event_button()==3) GetCombi(24);
+if (Fl::event_button()==1) PutCombi(24);
+o->label(hor->Banco[24].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {585 275 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 24
+              xywh {555 275 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco25 {
+              callback {if (Fl::event_button()==3) GetCombi(25);
+if (Fl::event_button()==1) PutCombi(25);
+o->label(hor->Banco[25].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {60 305 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 25
+              xywh {20 305 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco26 {
+              callback {if (Fl::event_button()==3) GetCombi(26);
+if (Fl::event_button()==1) PutCombi(26);
+o->label(hor->Banco[26].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {235 305 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 26
+              xywh {205 305 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco27 {
+              callback {if (Fl::event_button()==3) GetCombi(27);
+if (Fl::event_button()==1) PutCombi(27);
+o->label(hor->Banco[27].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {410 305 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 27
+              xywh {380 305 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco28 {
+              callback {if (Fl::event_button()==3) GetCombi(28);
+if (Fl::event_button()==1) PutCombi(28);
+o->label(hor->Banco[28].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {585 305 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 28
+              xywh {555 305 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco29 {
+              callback {if (Fl::event_button()==3) GetCombi(29);
+if (Fl::event_button()==1) PutCombi(29);
+o->label(hor->Banco[29].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {60 335 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 29
+              xywh {20 335 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco30 {
+              callback {if (Fl::event_button()==3) GetCombi(30);
+if (Fl::event_button()==1) PutCombi(30);
+o->label(hor->Banco[30].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {235 335 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 30
+              xywh {205 335 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco31 {
+              callback {if (Fl::event_button()==3) GetCombi(31);
+if (Fl::event_button()==1) PutCombi(31);
+o->label(hor->Banco[31].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {410 335 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 31
+              xywh {380 335 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+            Fl_Button Banco32 {
+              callback {if (Fl::event_button()==3) GetCombi(32);
+if (Fl::event_button()==1) PutCombi(32);
+o->label(hor->Banco[32].Name)}
+              tooltip {Right Click Get -  Left Click Put} xywh {585 335 145 25} box PLASTIC_UP_BOX color 6 labeltype ENGRAVED_LABEL labelsize 12 align 80
+            }
+            Fl_Box {} {
+              label 32
+              xywh {555 335 30 25} labeltype ENGRAVED_LABEL align 80
+            }
+          }
+          Fl_Box {} {
+            label {Visit http://horgand.berlios.de for more sound banks}
+            xywh {125 90 495 30} labelfont 1 labelcolor 4
+          }
+        }
+        Fl_Group {} {
+          label {More Sounds}
+          xywh {10 55 720 305} hide
+        } {
+          Fl_Browser MoreSounds {
+            xywh {30 60 514 295} type Hold
+          }
+          Fl_Button {} {
+            label Load
+            callback {if (MoreSounds->size()>2)
+{
+hor->LoadSoundBank(MoreSounds->value()-2);
+PutLoaded();
+
+}}
+            xywh {575 90 90 25}
+          }
+          Fl_Button {} {
+            label Rescan
+            callback {hor->ScanDir();
+putmoresounds();}
+            xywh {575 130 90 25}
+          }
+        }
+      }
+    }
+    Fl_Window RitEdit {
+      callback {if((hor->Rt[hor->ae].bars < 1) || (hor->Rt[hor->ae].bars > 4))
+{
+fl_alert("Bars error.");
+return;
+}  
+
+if((hor->Rt[hor->ae].quarter_note < 2) || (hor->Rt[hor->ae].quarter_note > 4))
+{
+fl_alert("Nom. error");
+return;
+}  
+if (hor->file_ok == 1)
+{
+GetRit(hor->ae);
+}
+RitEdit->hide();}
+      xywh {1440 512 615 175} type Double hide
+    } {
+      Fl_Input RtName {
+        label Name
+        callback {strcpy(hor->Rt[hor->ae].Nom , o->value());}
+        xywh {50 20 115 25} labeltype ENGRAVED_LABEL
+      }
+      Fl_Input RtFile {
+        label File
+        callback {strcpy(hor->Rt[hor->ae].Nfile, o->value());}
+        xywh {195 20 215 25} labeltype ENGRAVED_LABEL
+      }
+      Fl_Value_Input RtBars {
+        label Bars
+        callback {hor->Rt[hor->ae].bars = (int) o->value();}
+        xywh {520 20 20 25} labeltype ENGRAVED_LABEL minimum 1 maximum 4 step 1 value 1
+      }
+      Fl_Value_Input RtDen {
+        label {Nom.}
+        callback {hor->Rt[hor->ae].quarter_note = (int)o->value();
+QuitaPon();}
+        xywh {585 20 20 25} labeltype ENGRAVED_LABEL minimum 2 maximum 4 step 1 value 4
+      }
+      Fl_Group B1G1 {
+        xywh {40 115 140 60}
+      } {
+        Fl_Value_Input lb1 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 1;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {50 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lb2 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 2;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {80 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lb3 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 3;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {110 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lb4 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 4;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {140 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lbv1 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 1;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {50 145 25 20} maximum 88 step 1
+        }
+        Fl_Value_Input lbv2 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 2;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {80 145 25 20} maximum 99 step 1
+        }
+        Fl_Value_Input lbv3 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 3;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {110 145 25 20} maximum 99 step 1
+        }
+        Fl_Value_Input lbv4 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 4;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {140 145 25 20} maximum 99 step 1
+        }
+      }
+      Fl_Group B1G2 {
+        xywh {180 115 140 60}
+      } {
+        Fl_Value_Input lb5 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 5;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {190 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lb6 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 6;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {220 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lb7 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 7;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {250 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lb8 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 8;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {280 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lbv5 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 5;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {190 145 25 20} maximum 99 step 1
+        }
+        Fl_Value_Input lbv6 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 6;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {220 145 25 20} maximum 99 step 1
+        }
+        Fl_Value_Input lbv7 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 7;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {250 145 25 20} maximum 99 step 1
+        }
+        Fl_Value_Input lbv8 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 8;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {280 145 25 20} maximum 99 step 1
+        }
+      }
+      Fl_Group B1G3 {
+        xywh {325 115 140 60}
+      } {
+        Fl_Value_Input lb9 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 9;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {335 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lb10 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 10;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {365 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lb11 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 11;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {395 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lb12 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 12;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {425 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lbv9 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 9;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {335 145 25 20} maximum 99 step 1
+        }
+        Fl_Value_Input lbv10 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 10;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {365 145 25 20} maximum 99 step 1
+        }
+        Fl_Value_Input lbv11 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 11;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {395 145 25 20} maximum 99 step 1
+        }
+        Fl_Value_Input lbv12 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 12;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {425 145 25 20} maximum 99 step 1
+        }
+      }
+      Fl_Group B1G4 {open
+        xywh {470 115 140 60}
+      } {
+        Fl_Value_Input lb13 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 13;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {480 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lb14 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 14;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {510 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lb15 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 15;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {540 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lb16 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 16;
+hor->Rt[hor->ae].Line_Bass_Note[pos] = (int) o->value();}
+          xywh {570 120 25 20} maximum 12 step 1
+        }
+        Fl_Value_Input lbv13 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 13;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {480 145 25 20} maximum 99 step 1
+        }
+        Fl_Value_Input lbv14 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 14;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {510 145 25 20} maximum 99 step 1
+        }
+        Fl_Value_Input lbv15 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 15;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {540 145 25 20} maximum 99 step 1
+        }
+        Fl_Value_Input lbv16 {
+          callback {int pos;
+pos = ((hor->pattern_bars - 1) * (4 * hor->Rt[hor->ae].quarter_note)) + 16;
+hor->Rt[hor->ae].Line_Bass_Velocity[pos] = (int) o->value();}
+          xywh {570 145 25 20} maximum 99 step 1
+        }
+      }
+      Fl_Counter SBar {
+        label {Bar }
+        callback {if (o->value() > hor->Rt[hor->ae].bars) o->value(hor->Rt[hor->ae].bars);
+hor->pattern_bars = (int) o->value();
+meteval();}
+        xywh {35 70 65 25} type Simple labeltype ENGRAVED_LABEL align 4 minimum 1 maximum 4 step 1 value 1
+        code0 {o->value(hor->pattern_bars);}
+      }
+      Fl_Button CloRit {
+        label Ok
+        callback {RitEdit->do_callback();}
+        xywh {130 70 80 25} shortcut 0xff0d labeltype ENGRAVED_LABEL
+      }
+      Fl_Box {} {
+        label Note
+        xywh {5 120 40 25} labeltype ENGRAVED_LABEL
+      }
+      Fl_Box {} {
+        label {Vol.}
+        xywh {5 140 40 25} labeltype ENGRAVED_LABEL
+      }
+      Fl_Box {} {
+        xywh {390 50 215 65} box DOWN_BOX
+      }
+      Fl_Box {} {
+        label {1=1   }
+        xywh {395 50 45 25} labeltype ENGRAVED_LABEL labelcolor 88 align 20
+      }
+      Fl_Box {} {
+        label {2=2m }
+        xywh {395 70 45 25} labeltype ENGRAVED_LABEL labelcolor 88 align 20
+      }
+      Fl_Box {} {
+        label {3=2M  }
+        xywh {395 90 45 25} labeltype ENGRAVED_LABEL labelcolor 88 align 20
+      }
+      Fl_Box {} {
+        label {4=3m }
+        xywh {445 50 45 25} labeltype ENGRAVED_LABEL labelcolor 88 align 20
+      }
+      Fl_Box {} {
+        label {5=3M }
+        xywh {445 70 45 25} labeltype ENGRAVED_LABEL labelcolor 88 align 20
+      }
+      Fl_Box {} {
+        label {6=4J  }
+        xywh {445 90 45 25} labeltype ENGRAVED_LABEL labelcolor 88 align 20
+      }
+      Fl_Box {} {
+        label {7=4\#   }
+        xywh {500 50 45 25} labeltype ENGRAVED_LABEL labelcolor 88 align 20
+      }
+      Fl_Box {} {
+        label {8=5J }
+        xywh {500 70 45 25} labeltype ENGRAVED_LABEL labelcolor 88 align 20
+      }
+      Fl_Box {} {
+        label {9=6m}
+        xywh {500 90 45 25} labeltype ENGRAVED_LABEL labelcolor 88 align 20
+      }
+      Fl_Box {} {
+        label {10=6M}
+        xywh {550 50 45 25} labeltype ENGRAVED_LABEL labelcolor 88 align 20
+      }
+      Fl_Box {} {
+        label {11=7m }
+        xywh {550 70 45 25} labeltype ENGRAVED_LABEL labelcolor 88 align 20
+      }
+      Fl_Box {} {
+        label {12=7M   }
+        xywh {550 90 45 25} labeltype ENGRAVED_LABEL labelcolor 88 align 20
+      }
+      Fl_Box {} {
+        label {Notes:}
+        xywh {325 65 50 25} labeltype ENGRAVED_LABEL
+      }
+      Fl_Button {} {
+        label Browse
+        callback {char *filename;
+filename=fl_file_chooser("Browse:","(*.wav)",NULL,0);
+if (filename==NULL) return;
+filename=fl_filename_setext(filename,".wav");
+RtFile->value(filename);}
+        xywh {415 20 60 25}
+      }
+    }
+    Fl_Window ADSRwin {
+      label Synthesizer
+      callback {Guarda_Pref(3);
+o->hide();}
+      xywh {1494 170 330 480} type Double hide
+    } {
+      Fl_Box {} {
+        label Drawbar
+        xywh {1 1 140 76} box PLASTIC_UP_BOX color 32 labelsize 13 labelcolor 4 align 17
+      }
+      Fl_Dial D_attack {
+        label Attack
+        callback {hor->a.attack=o->value();
+hor->u_attack = 1.0 / hor->a.attack;
+ponvalor(o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {5 25 40 40} box OSHADOW_BOX labelsize 9 minimum 0.001 maximum 0.2 step 0.001 value 0.001
+        class Rueda
+      }
+      Fl_Dial D_decay {
+        label Decay
+        callback {hor->a.decay=o->value();
+hor->u_decay= 1.0 / hor->a.decay;
+ponvalor(o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {50 25 40 40} box OSHADOW_BOX labelsize 9 minimum 0.1 maximum 0.9 step 0.01 value 0.2
+        class Rueda
+      }
+      Fl_Dial D_sustain {
+        label Sustain
+        callback {hor->a.sustain=o->value();
+ponvalor(o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {95 25 40 40} box OSHADOW_BOX labelsize 9 maximum 0.99 step 0.01 value 0.8
+        class Rueda
+      }
+      Fl_Box {} {
+        label Percussion
+        xywh {140 1 95 76} box PLASTIC_UP_BOX color 32 labelsize 13 labelcolor 4 align 17
+      }
+      Fl_Dial D_p_attack {
+        label Attack
+        callback {hor->a.p_attack=o->value();
+hor->u_p_attack= 1.0 / hor->a.p_attack;
+ponvalor(o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {145 25 40 40} box OSHADOW_BOX labelsize 9 minimum 5e-05 maximum 0.01 step 1e-05 value 0.0001
+        class Rueda
+      }
+      Fl_Dial D_p_decay {
+        label Decay
+        callback {hor->a.p_decay=o->value();
+hor->u_p_decay= 1.0 / hor->a.p_decay;
+ponvalor(o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {190 25 40 40} box OSHADOW_BOX selection_color 0 labelsize 9 minimum 0.001 maximum 0.7 step 0.001 value 0.24
+        class Rueda
+      }
+      Fl_Box Saca {
+        xywh {0 78 330 32} box DOWN_BOX color 0 selection_color 32 labelcolor 1
+      }
+      Fl_Box {} {
+        label Normalize
+        xywh {0 110 140 100} box PLASTIC_UP_BOX color 0 labelsize 13 labelcolor 4 align 17
+      }
+      Fl_Counter D_Freq {
+        label Frequency
+        callback {D_Att->value(hor->a.Normalize[(int)o->value()]);
+
+char temp[32];
+bzero(temp,sizeof(temp));
+sprintf(temp,"Frequency %.1f",hor->lasfreq[(int)o->value()]);
+Saca->copy_label(temp);}
+        xywh {5 139 70 25} type Simple labelsize 9 align 8 minimum 1 maximum 22 step 1 value 1
+      }
+      Fl_Counter D_Att {
+        label Attenuation
+        callback {hor->a.Normalize[(int) D_Freq->value()]=o->value();
+Actu();}
+        xywh {5 174 70 25} type Simple labelsize 9 align 8 when 4 minimum 0.001 maximum 1 step 0.01 value 1
+      }
+      Fl_Box {} {
+        label {F.Fine}
+        xywh {140 110 190 100} box PLASTIC_UP_BOX color 0 labelsize 13 labelcolor 4 align 17
+      }
+      Fl_Counter D_Freq_F {
+        label Drawbar
+        callback {D_FFval->value(hor->a.Operator[(int)o->value()].harmonic_fine);
+
+char temp[32];
+bzero(temp,sizeof(temp));
+sprintf(temp,"Drawbar %d",(int)o->value());
+Saca->copy_label(temp);}
+        xywh {180 140 70 25} type Simple labelsize 9 align 8 minimum 1 maximum 10 step 1 value 1
+      }
+      Fl_Counter D_FFval {
+        label {F.Fine}
+        callback {hor->a.Operator[(int) D_Freq_F->value()].harmonic_fine=o->value();
+Actu();}
+        xywh {150 175 145 25} labelsize 9 align 8 when 4 minimum -0.5 maximum 0.5 step 1e-05
+      }
+      Fl_Box {} {
+        label {Rotary Amplitude}
+        xywh {0 280 170 55} box PLASTIC_UP_BOX color 0 labelsize 13 labelcolor 4 align 17
+      }
+      Fl_Counter D_Rot_Amp {
+        label Amplitude
+        callback {hor->a.Rotary_LFO_Amplitude=o->value();
+Actu();}
+        xywh {10 305 90 25} type Simple labelsize 9 align 8 when 4 minimum 100 maximum 14100 step 100 value 12800
+      }
+      Fl_Box {} {
+        label Transpose
+        xywh {170 280 160 55} box PLASTIC_UP_BOX color 0 labelsize 13 labelcolor 4 align 17
+      }
+      Fl_Counter D_O_Transpose {
+        callback {hor->a.organ_transpose=(int)o->value();
+Actu();}
+        xywh {215 305 70 25} type Simple labelsize 9 align 8 when 4 minimum -36 maximum 24 step 1
+      }
+      Fl_Box {} {
+        label Click
+        xywh {235 1 95 76} box PLASTIC_UP_BOX color 32 labelsize 13 labelcolor 4 align 17
+      }
+      Fl_Dial D_c_attack {
+        label Attack
+        callback {hor->a.c_attack=o->value();
+hor->u_c_attack= 1.0 / hor->a.c_attack;
+ponvalor(o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {240 25 40 40} box OSHADOW_BOX labelsize 9 minimum 5e-05 maximum 0.0005 step 1e-05 value 0.0001
+        class Rueda
+      }
+      Fl_Dial D_c_decay {
+        label Decay
+        callback {hor->a.c_decay=o->value();
+hor->u_c_decay= 1.0 / hor->a.c_decay;
+ponvalor(o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {285 25 40 41} box OSHADOW_BOX labelsize 9 minimum 0.001 maximum 0.02 step 0.001 value 0.001
+        class Rueda
+      }
+      Fl_Box {} {
+        label Click
+        xywh {0 335 330 100} box PLASTIC_UP_BOX color 0 labelsize 13 labelcolor 4 align 17
+      }
+      Fl_Counter D_Click_Freq {
+        label Frequency1
+        callback {hor->a.Click_Freq=o->value();
+Actu();}
+        xywh {115 365 150 25} labelsize 9 align 8 when 4 minimum 10 maximum 20000 step 10 value 200
+      }
+      Fl_Dial D_Click_Vol {
+        label {V.Attack}
+        callback {hor->a.Click_Vol=o->value();
+ponvalor(o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {5 340 35 35} box OSHADOW_BOX labelsize 9 step 0.01 value 0.1
+        class Rueda
+      }
+      Fl_Dial D_Click2_Vol {
+        label {V.Release}
+        callback {hor->a.Click2_Vol=o->value();
+ponvalor(o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {65 340 35 35} box OSHADOW_BOX labelsize 9 step 0.01 value 0.1
+        class Rueda
+      }
+      Fl_Counter D_Click_Freq2 {
+        label Frequency2
+        callback {hor->a.Click_Freq2=o->value();
+Actu();}
+        xywh {115 400 150 25} labelsize 9 align 8 when 4 minimum 10 maximum 20000 step 10 value 6700
+      }
+      Fl_Dial D_Click_Vol1 {
+        label {V.Freq 1}
+        callback {hor->a.Click_Vol1=o->value();
+ponvalor(o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {5 385 35 35} box OSHADOW_BOX labelsize 9 step 0.01 value 1
+        class Rueda
+      }
+      Fl_Dial D_Click_Vol2 {
+        label {V.Freq 2}
+        callback {hor->a.Click_Vol2=o->value();
+ponvalor(o->value());
+if (Signal_for_Cb_Sliders == 1)
+{ 
+Actu();
+Signal_for_Cb_Sliders = 0;
+}}
+        xywh {65 385 35 35} box OSHADOW_BOX labelsize 9 step 0.01 value 1
+        class Rueda
+      }
+      Fl_Box {} {
+        label {Wave Type}
+        xywh {0 210 230 70} box PLASTIC_UP_BOX color 0 labelsize 13 labelcolor 4 align 17
+      }
+      Fl_Counter D_Wave_Type {
+        label Drawbar
+        callback {D_Wave_Type_Val->value(hor->a.Operator[(int)o->value()].wave);
+
+char temp[32];
+bzero(temp,sizeof(temp));
+sprintf(temp,"Drawbar %d",(int)o->value());
+Saca->copy_label(temp);}
+        xywh {5 240 70 25} type Simple labelsize 9 align 8 minimum 1 maximum 10 step 1 value 1
+      }
+      Fl_Counter D_Wave_Type_Val {
+        label Wave
+        callback {hor->a.Operator[(int)D_Wave_Type->value()].wave=(int)o->value();
+Actu();}
+        xywh {125 240 70 25} type Simple labelsize 9 align 8 when 4 minimum 1 maximum 9 step 1 value 1
+      }
+      Fl_Box {} {
+        label {Keyboard Scaling}
+        xywh {230 210 100 70} box PLASTIC_UP_BOX color 0 labelsize 13 labelcolor 4 align 145
+      }
+      Fl_Button D_KeybS {
+        label On
+        callback {hor->a.scaling=o->value();
+Actu();}
+        xywh {255 250 55 25} type Toggle box PLASTIC_UP_BOX selection_color 3 labelsize 12
+      }
+      Fl_Box {} {
+        xywh {0 435 330 45} box PLASTIC_UP_BOX color 0 labelsize 13 labelcolor 4 align 17
+      }
+      Fl_Counter D_Wave_Type_LFO {
+        label {Tremolo Wave}
+        callback {hor->a.LFO_Wave=(int)o->value();
+Actu();}
+        xywh {30 450 70 25} type Simple labelsize 9 align 1 when 4 minimum 1 maximum 9 step 1 value 1
+      }
+      Fl_Counter D_Wave_Type_Chorus {
+        label {Chorus Wave}
+        callback {hor->a.Chorus_Wave=(int)o->value();
+Actu();}
+        xywh {230 450 70 25} type Simple labelsize 9 align 1 when 4 minimum 1 maximum 9 step 1 value 1
+      }
+      Fl_Counter D_Wave_Type_Rotary {
+        label {Rotary Wave}
+        callback {hor->a.Rotary_Wave=(int)o->value();
+Actu();}
+        xywh {130 450 70 25} type Simple labelsize 9 align 1 when 4 minimum 1 maximum 9 step 1 value 1
+      }
+    }
+  }
+  Function {HORGAN(int argc, char **argv,HOR *hor_)} {C
+  } {
+    code {Fl::scheme("gtk+");
+fl_open_display();
+XpmCreatePixmapFromData(fl_display, DefaultRootWindow(fl_display),(char **)horgand128,&p ,&mask, NULL);
+Fl::visual(FL_RGB);
+Fl::visual(FL_DOUBLE|FL_INDEX);
+Fl::get_system_colors();
+hor=hor_;
+make_window();
+HORwindow->icon((char *)p);
+HORBank->icon((char *)p);
+RitEdit->icon((char *)p);
+ADSRwin->icon((char *)p);
+aboutwindow->icon((char *)p);
+Settingswindow->icon((char *)p);
+char tmp[64];
+sprintf(tmp,"%s v%s",PACKAGE,VERSION); 
+HORwindow->copy_label(tmp);
+Fl::focus(PANICO);
+metebanco();
+putmoresounds();
+metelo();
+Actu();
+hor->PutPrim();
+meteritmos();
+Fl::background(163,163,163);
+HORwindow->show(argc,argv);
+put_icon(HORwindow);
+
+void * v=MT;
+
+Fl::add_timeout(1.0 * 0.04,tick,v);} {}
+  }
+  Function {metelo()} {} {
+    code {char *temp;
+int val=1;
+float valf=0;
+int x,y,w,h;
+
+Fl_Preferences horgand (Fl_Preferences::USER, WEBSITE , PACKAGE);
+
+horgand.get("Audio Out device",temp,"");
+DMIN2->label(temp);
+
+horgand.get("Rhythm Selected",val,2);
+Fl_Button *pepe;
+pepe = (Fl_Button*) RitButtons->child(val-1);
+pepe->value(1);
+
+Selected_Rhythm = val;
+GetRit(Selected_Rhythm);
+
+horgand.get("Rhythm Volume",valf,.5);        
+hor->Rhythm_Volume=valf;
+
+
+horgand.get("Bass Selected",val,1);
+SetBassType(val);
+
+switch (val)
+        {
+          case 0:
+          Bass1->value(1);
+          break;          
+          case 1:
+          Bass2->value(1);
+          break; 
+          case 2:
+          Bass3->value(1);
+        }        
+        
+horgand.get("Bass Volume",valf,.5);        
+hor->Bass_Volume=valf;
+
+horgand.get("Preset",val,0);
+hor->cpreset=val;
+if(commandline != 1) PutCombi(hor->cpreset);
+else meteprog();
+
+horgand.get("Split Point",val,0);
+hor->split=val;
+Split->value(hor->split);
+
+horgand.get("Master_Tune",valf,1);
+hor->mastertune=valf;
+MasterT->value((int) ((hor->mastertune -1) * 1600));
+calbtune();
+
+horgand.get("Master Volume",valf,.7);
+Master->value((int)(valf*100));
+hor->Master_Volume=valf;
+
+horgand.get("HORwindow X",x,1);
+horgand.get("HORwindow Y",y,1);
+horgand.get("HORwindow W",w,800);
+horgand.get("HORwindow H",h,600);
+
+HORwindow->resize(x,y,w,h);} {
+      callback {hor->Operator[1].harmonic = (int) o->value();
+char tmp[64];
+sprintf(tmp, "%2.1f", hor->lasfreq[(int) o->value()]);
+V1->label(tmp);
+Actu();
+Bass1->value(1);
+SetBassType(0);}
+    }
+  }
+  Function {GetCombi(int i)} {} {
+    code {hor->Get_Combi_t(i);} {}
+  }
+  Function {PutCombi(int i)} {} {
+    code {hor->cpreset= i;
+hor->Put_Combi_t(i);
+
+meteprog();
+Actu();
+sprintf(hor->temporal, "%02d",i);
+DispNumber->label(hor->temporal);
+CPrograma->value(i);} {}
+  }
+  Function {MiraClientes()} {} {
+    code {FILE *fp;
+char temp[128];
+char temp1[128];
+char *masque;
+char *name;
+
+BMidiIn->clear();
+BMidiIn->add("Not Connected");
+
+if ((fp = fopen ("/proc/asound/seq/clients", "r")) != NULL)
+  {
+    bzero (temp, sizeof (temp));
+
+      while (fgets (temp, sizeof temp, fp) != NULL)
+           {
+             
+            if (strstr(temp,"Port") != NULL)
+             
+           {  
+             
+             strcpy(temp1,temp);
+             strtok(temp1,"\\"");
+             name=strtok(NULL,"\\"");
+             masque=strtok(NULL,")");
+             
+             if (masque[2]=='R' ) BMidiIn->add(name);
+             
+            } 
+           } 
+   }
+   
+   fclose(fp);} {}
+  }
+  Function {MiraConfig()} {} {
+    code {int i = 1;
+
+while (BMidiIn->text(i) != NULL)
+{
+if (strcmp(BMidiIn->text(i),hor->MID)==0 ) BMidiIn->select(i,1);
+i++; 
+}
+
+switch (hor->Salida)
+{
+      case 1: 
+             OSS->setonly();
+             break;
+      case 2: 
+             Alsa->setonly();
+             break;
+      case 3:
+             Jack->setonly();
+             break;
+      
+}
+
+BFiname->value(hor->BankFilename);
+RFiname->value(hor->RhythmFilename);} {}
+  }
+  Function {metebanco()} {} {
+    code {Banco1->label(hor->Banco[1].Name);
+Banco2->label(hor->Banco[2].Name);
+Banco3->label(hor->Banco[3].Name);
+Banco4->label(hor->Banco[4].Name);
+Banco5->label(hor->Banco[5].Name);
+Banco6->label(hor->Banco[6].Name);
+Banco7->label(hor->Banco[7].Name);
+Banco8->label(hor->Banco[8].Name);
+Banco9->label(hor->Banco[9].Name);
+Banco10->label(hor->Banco[10].Name);
+Banco11->label(hor->Banco[11].Name);
+Banco12->label(hor->Banco[12].Name);
+Banco13->label(hor->Banco[13].Name);
+Banco14->label(hor->Banco[14].Name);
+Banco15->label(hor->Banco[15].Name);
+Banco16->label(hor->Banco[16].Name);
+Banco17->label(hor->Banco[17].Name);
+Banco18->label(hor->Banco[18].Name);
+Banco19->label(hor->Banco[19].Name);
+Banco20->label(hor->Banco[20].Name);
+Banco21->label(hor->Banco[21].Name);
+Banco22->label(hor->Banco[22].Name);
+Banco23->label(hor->Banco[23].Name);
+Banco24->label(hor->Banco[24].Name);
+Banco25->label(hor->Banco[25].Name);
+Banco26->label(hor->Banco[26].Name);
+Banco27->label(hor->Banco[27].Name);
+Banco28->label(hor->Banco[28].Name);
+Banco29->label(hor->Banco[29].Name);
+Banco30->label(hor->Banco[30].Name);
+Banco31->label(hor->Banco[31].Name);
+Banco32->label(hor->Banco[32].Name);} {}
+  }
+  Function {Undo()} {} {
+    code {hor->MUndo();
+meteprog();} {}
+  }
+  Function {Actu()} {} {
+    code {if ( (CL->value() != 0 ) || (CF->value() !=0 ) ) {
+           fl_alert("In Compare mode changes are deprecated");
+           return;
+           }
+
+hor->MActu();} {}
+  }
+  Function {Redo()} {} {
+    code {hor->MRedo();
+meteprog();} {}
+  }
+  Function {GetPrim()} {} {
+    code {hor->MGetPrim();
+meteprog();} {}
+  }
+  Function {tick(void* v)} {return_type {static void}
+  } {
+    code {Fl_Box *o = (Fl_Box*)v;
+o->do_callback();
+Fl::repeat_timeout(1.0 * 0.04,tick,v);} {}
+  }
+  Function {GetRit(int Selected_Rhythm)} {} {
+    code {int i;
+int rula;
+
+char temp[512];
+sprintf(temp,"%s/%s",DATADIR,hor->Rt[Selected_Rhythm].Nfile);
+
+
+char *tmp = temp;
+
+rula = hor->Select_Rhythm(tmp);
+if (rula != 0) 
+{ 
+RitOn->value(0);
+StStRiton->value(0);
+hor->Rhythm_On = 0;
+return;
+}
+Tempo->activate();
+hor->bars = hor->Rt[Selected_Rhythm].bars;
+hor->quarter_note = hor->Rt[Selected_Rhythm].quarter_note;
+
+for (i = 1; i<=(4 * hor->quarter_note * hor->bars); i++)
+{
+ hor->Line_Bass_Note[i] = hor->Rt[Selected_Rhythm].Line_Bass_Note[i];
+ hor->Line_Bass_Velocity[i] =hor->Rt[Selected_Rhythm].Line_Bass_Velocity[i];
+}
+
+hor->frame_total_size = (int) (hor->tempo * hor->sfinfo.frames);
+hor->fractional_position = hor->frame_total_size / (4 * hor->quarter_note * hor->bars);
+Tempo->activate();} {}
+  }
+  Function {meteritmos()} {} {
+    code {Rit1->label(hor->Rt[1].Nom);
+Rit2->label(hor->Rt[2].Nom);
+Rit3->label(hor->Rt[3].Nom);
+Rit4->label(hor->Rt[4].Nom);
+Rit5->label(hor->Rt[5].Nom);
+Rit6->label(hor->Rt[6].Nom);
+Rit7->label(hor->Rt[7].Nom);
+Rit8->label(hor->Rt[8].Nom);
+Rit9->label(hor->Rt[9].Nom);
+Rit10->label(hor->Rt[10].Nom);
+Rit11->label(hor->Rt[11].Nom);
+Rit12->label(hor->Rt[12].Nom);
+Rit13->label(hor->Rt[13].Nom);
+Rit14->label(hor->Rt[14].Nom);
+Rit15->label(hor->Rt[15].Nom);
+Rit16->label(hor->Rt[16].Nom);
+Rit17->label(hor->Rt[17].Nom);
+Rit18->label(hor->Rt[18].Nom);
+Rit19->label(hor->Rt[19].Nom);
+Rit20->label(hor->Rt[20].Nom);} {}
+  }
+  Function {calbtrans()} {} {
+    code {hor->bass_transpose = hor->transpose;
+if ( hor->bass_transpose > 12 ) hor->bass_transpose = hor->bass_transpose  % 12;
+if ( hor->bass_transpose < -12 ) hor->bass_transpose = hor->bass_transpose  % 12;
+if ( hor->transpose % 12 == 0) hor->bass_transpose = 0;} {}
+  }
+  Function {calbtune()} {} {
+    code {int i,k;
+float btuneval =  ((float) MasterT->value() / 100.0);
+
+for(i=0; i<=11; i++)
+{
+ if ( MasterT->value() > 0)
+
+  {  k = i + 1;
+     if (i == 11) k = 0; 
+     hor->AB[i].bmt =  (hor->AB[k].tune - hor->AB[i].tune) * btuneval;
+
+     if (i == 6) hor->AB[6].bmt = (2.980 - hor->AB[6].tune) * btuneval;
+
+  }
+
+ if (MasterT->value()== 0 ) hor->AB[i].bmt = 0;
+
+if ( MasterT->value() < 0)
+
+  {  k = i - 1;
+     if (i == 0) k = 11; 
+     hor->AB[i].bmt =  (hor->AB[i].tune - hor->AB[k].tune)  * btuneval;
+      if (i == 7) hor->AB[7].bmt = (hor->AB[7].tune - 1.3980 ) * btuneval;
+
+  }
+ 
+
+}} {}
+  }
+  Function {EditRit(int i)} {} {
+    code {hor->ae = i;
+RtName->value(hor->Rt[i].Nom);
+RtFile->value(hor->Rt[i].Nfile);
+RtBars->value(hor->Rt[i].bars);
+RtDen->value(hor->Rt[i].quarter_note);
+QuitaPon();
+hor->pattern_bars= 1;
+meteval();
+char temp[512];
+sprintf(temp,"%s - Bass Line Editor",hor->Rt[i].Nom);
+RitEdit->label(temp);
+RitEdit->position(HORwindow->x(),HORwindow->y()+40);
+RitEdit->show();
+put_icon(RitEdit);
+Fl::focus(CloRit);} {}
+  }
+  Function {QuitaPon()} {} {
+    code {switch(hor->Rt[hor->ae].quarter_note)
+{
+  case 2:
+     B1G3->hide();
+     B1G4->hide();
+     lb9->hide();
+     lb10->hide();
+     lb11->hide();
+     lb12->hide();
+     lb13->hide();
+     lb14->hide();
+     lb15->hide();
+     lb16->hide();
+     lbv9->hide();
+     lbv10->hide();
+     lbv11->hide();
+     lbv12->hide();
+     lbv13->hide();
+     lbv14->hide();
+     lbv15->hide();
+     lbv16->hide();
+    break;
+
+  case 3:
+     B1G3->show();
+     B1G4->hide();
+     lb9->show();
+     lb10->show();
+     lb11->show();
+     lb12->show();
+     lb13->hide();
+     lb14->hide();
+     lb15->hide();
+     lb16->hide();
+     lbv9->show();
+     lbv10->show();
+     lbv11->show();
+     lbv12->show();
+     lbv13->hide();
+     lbv14->hide();
+     lbv15->hide();
+     lbv16->hide();
+     break;
+  case 4:
+     B1G3->show();
+     B1G4->show();
+     lb9->show();
+     lb10->show();
+     lb11->show();
+     lb12->show();
+     lb13->show();
+     lb14->show();
+     lb15->show();
+     lb16->show();
+     lbv9->show();
+     lbv10->show();
+     lbv11->show();
+     lbv12->show();
+     lbv13->show();
+     lbv14->show();
+     lbv15->show();
+     lbv16->show();
+     break;
+}} {}
+  }
+  Function {meteval()} {} {
+    code {int i = (hor->pattern_bars- 1) * (hor->Rt[hor->ae].quarter_note * 4);
+
+
+lb1->value(hor->Rt[hor->ae].Line_Bass_Note[i+1]);
+lb2->value(hor->Rt[hor->ae].Line_Bass_Note[i+2]);
+lb3->value(hor->Rt[hor->ae].Line_Bass_Note[i+3]);
+lb4->value(hor->Rt[hor->ae].Line_Bass_Note[i+4]);
+lb5->value(hor->Rt[hor->ae].Line_Bass_Note[i+5]);
+lb6->value(hor->Rt[hor->ae].Line_Bass_Note[i+6]);
+lb7->value(hor->Rt[hor->ae].Line_Bass_Note[i+7]);
+lb8->value(hor->Rt[hor->ae].Line_Bass_Note[i+8]);
+lbv1->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+1]);
+lbv2->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+2]);
+lbv3->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+3]);
+lbv4->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+4]);
+lbv5->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+5]);
+lbv6->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+6]);
+lbv7->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+7]);
+lbv8->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+8]);
+
+if ( hor->Rt[hor->ae].quarter_note > 2)
+{
+
+lb9->value(hor->Rt[hor->ae].Line_Bass_Note[i+9]);
+lb10->value(hor->Rt[hor->ae].Line_Bass_Note[i+10]);
+lb11->value(hor->Rt[hor->ae].Line_Bass_Note[i+11]);
+lb12->value(hor->Rt[hor->ae].Line_Bass_Note[i+12]);
+lbv9->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+9]);
+lbv10->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+10]);
+lbv11->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+11]);
+lbv12->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+12]);
+
+}
+
+if ( hor->Rt[hor->ae].quarter_note > 3)
+
+{
+
+lb13->value(hor->Rt[hor->ae].Line_Bass_Note[i+13]);
+lb14->value(hor->Rt[hor->ae].Line_Bass_Note[i+14]);
+lb15->value(hor->Rt[hor->ae].Line_Bass_Note[i+15]);
+lb16->value(hor->Rt[hor->ae].Line_Bass_Note[i+16]);
+lbv13->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+13]);
+lbv14->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+14]);
+lbv15->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+15]);
+lbv16->value(hor->Rt[hor->ae].Line_Bass_Velocity[i+16]);
+}
+
+SBar->value(hor->pattern_bars);} {}
+  }
+  Function {ApagaTodo()} {} {
+    code {Rit1->value(0);
+Rit2->value(0);
+Rit3->value(0);
+Rit4->value(0);
+Rit5->value(0);
+Rit6->value(0);
+Rit7->value(0);
+Rit8->value(0);
+Rit9->value(0);
+Rit10->value(0);
+Rit11->value(0);
+Rit12->value(0);
+Rit13->value(0);
+Rit14->value(0);
+Rit15->value(0);
+Rit16->value(0);
+Rit17->value(0);
+Rit18->value(0);
+Rit19->value(0);
+Rit20->value(0);} {}
+  }
+  Function {meteprog()} {} {
+    code {OMaster->value(hor->a.Organ_Master_Volume * 100.0);
+RitVol->value(hor->Rhythm_Volume);
+BassVol->value(hor->Bass_Volume);
+
+
+Mar1->value(hor->a.Operator[1].marimba);
+Mar2->value(hor->a.Operator[2].marimba);
+Mar3->value(hor->a.Operator[3].marimba);
+Mar4->value(hor->a.Operator[4].marimba);
+Mar5->value(hor->a.Operator[5].marimba);
+Mar6->value(hor->a.Operator[6].marimba);
+Mar7->value(hor->a.Operator[7].marimba);
+Mar8->value(hor->a.Operator[8].marimba);
+Mar9->value(hor->a.Operator[9].marimba);
+Mar10->value(hor->a.Operator[10].marimba);
+
+
+V1->value(hor->a.Operator[1].volumen * 100);
+V2->value(hor->a.Operator[2].volumen * 100);
+V3->value(hor->a.Operator[3].volumen * 100);
+V4->value(hor->a.Operator[4].volumen * 100);
+V5->value(hor->a.Operator[5].volumen * 100);
+V6->value(hor->a.Operator[6].volumen * 100);
+V7->value(hor->a.Operator[7].volumen * 100);
+V8->value(hor->a.Operator[8].volumen * 100);
+V9->value(hor->a.Operator[9].volumen * 100);
+V10->value(hor->a.Operator[10].volumen * 100);
+
+H1->value(hor->a.Operator[1].harmonic);
+H2->value(hor->a.Operator[2].harmonic);
+H3->value(hor->a.Operator[3].harmonic);
+H4->value(hor->a.Operator[4].harmonic);
+H5->value(hor->a.Operator[5].harmonic);
+H6->value(hor->a.Operator[6].harmonic);
+H7->value(hor->a.Operator[7].harmonic);
+H8->value(hor->a.Operator[8].harmonic);
+H9->value(hor->a.Operator[9].harmonic);
+H10->value(hor->a.Operator[10].harmonic);
+
+NV1->value(hor->lasfreq[hor->a.Operator[1].harmonic]);
+NV2->value(hor->lasfreq[hor->a.Operator[2].harmonic]);
+NV3->value(hor->lasfreq[hor->a.Operator[3].harmonic]);
+NV4->value(hor->lasfreq[hor->a.Operator[4].harmonic]);
+NV5->value(hor->lasfreq[hor->a.Operator[5].harmonic]);
+NV6->value(hor->lasfreq[hor->a.Operator[6].harmonic]);
+NV7->value(hor->lasfreq[hor->a.Operator[7].harmonic]);
+NV8->value(hor->lasfreq[hor->a.Operator[8].harmonic]);
+NV9->value(hor->lasfreq[hor->a.Operator[9].harmonic]);
+NV10->value(hor->lasfreq[hor->a.Operator[10].harmonic]);
+
+Detune->value(hor->a.detune);
+PLFOSpeed->value(hor->a.Pitch_LFO_Speed);
+PLFODelay->value(hor->a.Pitch_LFO_Delay * 10);
+LFOSpeed->value(hor->a.Rotary_LFO_Speed);
+LFOPitch->value(hor->a.LFOpitch);
+hor->Calc_LFO_Frequency();
+Rota->value(hor->a.E_Rotary_On);
+Transpose->value(hor->transpose);
+calbtrans();
+Nombre->value(hor->a.Name);
+CPrograma->value(hor->cpreset);
+EchoVol->value(hor->a.Delay_Volume * 100);
+EchoDelay->value(hor->a.Delay_Delay / 65100.0);
+EchoOn->value(hor->a.E_Delay_On);
+Rev->value(hor->a.E_Reverb_On);
+
+if (hor->a.E_Reverb_On == 1)
+{
+
+R1->activate();
+R2->activate();
+R3->activate();
+R4->activate();
+R5->activate();
+R6->activate();
+R7->activate();
+R8->activate();
+switch(hor->a.Reverb_Preset)
+{
+case 1:
+R1->setonly();
+break;
+case 2:
+R2->setonly();
+break;
+case 3:
+R3->setonly();
+break;
+case 4:
+R4->setonly();
+break;
+case 5:
+R5->setonly();
+break;
+case 6:
+R6->setonly();
+break;
+case 7:
+R7->setonly();
+break;
+case 8:
+R8->setonly();
+break;
+}
+}
+else
+{
+R1->value(0);
+R2->value(0);
+R3->value(0);
+R4->value(0);
+R5->value(0);
+R6->value(0);
+R7->value(0);
+R8->value(0);
+R1->deactivate();
+R2->deactivate();
+R3->deactivate();
+R4->deactivate();
+R5->deactivate();
+R6->deactivate();
+R7->deactivate();
+R8->deactivate();
+}
+
+
+BClick->value(hor->a.Click);
+ChorusOn->value(hor->a.E_Chorus_On);
+ELFOAmplitude->value(hor->a.Chorus_LFO_Amplitude);
+hor->Calc_Chorus_LFO_Frequency();
+POPO->value(hor->a.Chorus_Delay);
+ELFOSpeed->value(hor->a.Chorus_LFO_Speed);
+ChorVol->value(hor->a.Chorus_Volume * 100);
+BSync_Speed->value(hor->a.Speed_Sync);
+metesynth();
+hor->syncadsr();} {}
+  }
+  Function {SetBassType(int type)} {return_type void
+  } {
+    code {char temp[512];
+const char *bassfiles[] = {"AcousticBass.wav", "FenderBass.wav", "FretlessBass.wav"};
+
+sprintf(temp ,"%s/%s", DATADIR, bassfiles[type]);
+hor->Select_Bass(temp);
+hor->frames_bass = (int) (hor->sfinfob.frames / 2.0);
+hor->Bass_Type=type;} {}
+  }
+  Function {Guarda_Pref(int parte)} {} {
+    code {Fl_Preferences horgand (Fl_Preferences::USER, WEBSITE, PACKAGE);
+
+if (parte==0)
+{
+horgand.set("HORwindow X",HORwindow->x());
+horgand.set("HORwindow Y",HORwindow->y());
+horgand.set("HORwindow W",HORwindow->w());
+horgand.set("HORwindow H",HORwindow->h());
+
+horgand.set("Bank Filename",hor->BankFilename);
+horgand.set("Rhythm Filename",hor->RhythmFilename);
+
+
+horgand.set("Type Chord Recognition",hor->TypeRecChord);
+horgand.set("Split Point",hor->split);
+
+horgand.set("Bass Selected",hor->Bass_Type);
+horgand.set("Bass Volume",hor->Bass_Volume);
+horgand.set("Rhythm Selected",Selected_Rhythm);
+horgand.set("Rhythm Volume",hor->Rhythm_Volume);
+horgand.set("Master Volume",hor->Master_Volume);
+horgand.set("Master_Tune",hor->mastertune);
+horgand.set("Transpose",hor->transpose);
+horgand.set("Preset",hor->cpreset);
+}
+
+if (parte==1)
+{
+
+int i;
+char *temp;
+
+horgand.set("Bank Filename",hor->BankFilename);
+
+i = BMidiIn->value();
+temp = (char*) BMidiIn->text(i);
+if (temp == NULL ) temp= strdup("Not Connected");
+horgand.set("MIDI IN Device",temp);
+bzero(temp,sizeof(temp));
+temp = strdup("OSS");
+if (OSS->value() != 0) temp = strdup("OSS");
+if (Alsa->value() != 0) temp = strdup("Alsa");
+if (Jack->value() != 0) temp =strdup("Jack");
+horgand.set("Audio Out device",temp);
+}
+
+if (parte==2)
+{ 
+horgand.set("HORBank X",HORBank->x());
+horgand.set("HORBank Y",HORBank->y());
+horgand.set("HORBank W",HORBank->w());
+horgand.set("HORBank H",HORBank->h());
+}
+
+if (parte==3)
+{
+horgand.set("Synth X",ADSRwin->x());
+horgand.set("Synth Y",ADSRwin->y());
+horgand.set("Synth W",ADSRwin->w());
+horgand.set("Synth H",ADSRwin->h());
+}} {}
+  }
+  Function {ponvalor(float a)} {} {
+    code {char temp[32];
+bzero(temp,sizeof(temp));
+sprintf(temp,"%f",a);
+Saca->copy_label(temp);} {}
+  }
+  Function {metesynth()} {} {
+    code {D_attack->value(hor->a.attack);
+D_decay->value(hor->a.decay);
+D_sustain->value(hor->a.sustain);
+D_p_attack->value(hor->a.p_attack);
+D_p_decay->value(hor->a.p_decay);
+D_Att->value(hor->a.Normalize[(int)D_Freq->value()]);
+D_FFval->value(hor->a.Operator[(int)D_Freq_F->value()].harmonic_fine);
+D_FFval->lstep(0.001);
+D_Rot_Amp->value(hor->a.Rotary_LFO_Amplitude);
+D_O_Transpose->value(hor->a.organ_transpose);
+D_Freq_F->do_callback();
+D_c_attack->value(hor->a.c_attack);
+D_c_decay->value(hor->a.c_decay);
+D_Click_Vol->value(hor->a.Click_Vol);
+D_Click2_Vol->value(hor->a.Click2_Vol);
+D_Click_Freq->value(hor->a.Click_Freq);
+D_Click_Freq2->value(hor->a.Click_Freq2);
+D_Click_Vol1->value(hor->a.Click_Vol1);
+D_Click_Vol2->value(hor->a.Click_Vol2);
+D_Wave_Type_Val->value(hor->a.Operator[(int)D_Wave_Type->value()].wave);
+D_KeybS->value(hor->a.scaling);
+D_Wave_Type_LFO->value(hor->a.LFO_Wave);
+D_Wave_Type_Chorus->value(hor->a.Chorus_Wave);
+D_Wave_Type_Rotary->value(hor->a.Rotary_Wave);} {}
+  }
+  Function {put_icon(Fl_Window* window)} {} {
+    code {if (hints == NULL)
+hints = XGetWMHints(fl_display, fl_xid(window));
+
+hints->icon_pixmap=p;
+hints->icon_mask=mask; 
+hints->flags = IconPixmapHint | IconMaskHint;
+XSetWMHints(fl_display, fl_xid(window), hints);} {}
+  }
+  Function {putmoresounds()} {} {
+    code {char temp[256];
+int i=0;
+static const int sizes[]= {257,257,0};
+
+MoreSounds->column_widths(sizes);
+MoreSounds->clear();
+
+
+bzero(temp,sizeof(temp));
+sprintf(temp,"@c@b@B52@C1@_%s\\t@c@b@B54@C1@_%s","Name","Bank");
+MoreSounds->add(temp);
+
+
+while (i < hor->Nums)
+{ 
+
+ bzero(temp,sizeof(temp));
+ sprintf(temp,"@l@B52@_%s\\t@c@B54@_%s",hor->NBP[i].Name,hor->NBP[i].Bank);
+
+  MoreSounds->add(temp);
+  i++;
+}
+
+if (i>1) MoreSounds->select(2);} {}
+  }
+  Function {PutLoaded()} {} {
+    code {meteprog();
+Actu();
+hor->PutPrim();
+sprintf(hor->temporal,"--");
+DispNumber->label(hor->temporal);} {}
+  }
+  Function {Syncronize(int i, float val)} {} {
+    code {switch(i)
+{
+  case 0:
+      val=hor->a.Pitch_LFO_Speed;
+      hor->a.Chorus_LFO_Speed = val;
+      hor->a.Rotary_LFO_Speed = val;  
+      ELFOSpeed->value(val);
+      LFOSpeed->value(val);
+      break;
+
+  case 1:
+      hor->a.Chorus_LFO_Speed = val;
+      hor->a.Rotary_LFO_Speed = val;
+      ELFOSpeed->value(val);
+      LFOSpeed->value(val);
+      break;
+  
+   case 2:
+      hor->a.Chorus_LFO_Speed = val;
+      hor->a.Pitch_LFO_Speed = val;
+      ELFOSpeed->value(val);
+      PLFOSpeed->value(val);
+      break;
+  
+   case 3:
+             
+      hor->a.Pitch_LFO_Speed = val;
+      hor->a.Rotary_LFO_Speed = val;
+      PLFOSpeed->value(val);
+      LFOSpeed->value(val);
+      break;  
+}} {}
+  }
+} 

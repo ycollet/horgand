@@ -1,0 +1,154 @@
+
+Horgand v1.15
+---------------------
+
+Sorry for the english :-)
+
+New sound banks are available on the website
+
+http://horgand.berlios.de
+
+Enjoy!!!
+
+Note about v1.11
+-------------------
+
+Well the promised guru disappeared :-) , then I continue alone developping
+this package, anyway this is the first release that I'm relative happy with the organ
+sound.
+File format has changed, if you have v1.10 installed, please copy the
+Default.horeb bank file released with this version to the user horgand work
+directory located at $HOME/.horgand. 
+
+
+------------------------------------------------------------------------
+
+This is my fist DSP program attempt, my first jack client, and my first
+attempt to produce any sound, and i'm not programmer. 
+THIS PROGRAM COMES WITH NO WARRANTY, and sure have tones of
+bugs. 
+
+Horgand is a organ ... generates sound like a FM sinthesizer in real time,
+good reason for use a fast computer, there are many others programs who emulate a organ and sure
+their sound is better, but i program what i need, and just for fun.   
+
+You can modify the frequency of all "drawars" and use the "effects".
+
+I'm not a DSP "guru" and belive me, i will never be. Sure Horgand has many
+"noises", but ... i remember old organs ... they have many "noises" too.
+
+
+Requirements:
+------------    
+
+* Linux (Tested on a PIII 933 Debian sid).
+* ALSA (with sequencer).
+* JACK
+* FLTK (tested and compiled with v1.1.1)
+* Libsndfile
+* Midi Keyboard or virtual keyboard like vkeybd.    
+
+
+Get the lastest version in :
+
+http://horgand.berlios.de
+
+
+
+First i want to say something, personally i dont like any kind of auto-accompaniment, sequences,
+organs, because many people use it for work, and this is not good for the
+musiciens. In fact i wonder the day when the musiciens dont want to record
+anything, anymore. Only write the papers, and play live, that's music.
+
+Thanks for this great drums and bass loops, unfortunatelly i cant remember
+where i get it. If you know it, please let me know.
+
+Thanks to all the people who makes wonderfoul programs, and specially to Paul
+Nasca (from ZynaddSubFZ), always a inspiaration. Please read the Links
+section bellow.
+
+
+The bad news is...  Yes i know, the pitch of the drums
+changes when you moves the tempo slider, well maybe in future versions, but
+i like how that program runs on a PII 300, and ... pitch change? ... well
+sometimes is not to bad ... and you can write your loops at your favorite
+tempos.
+
+
+How to start?
+-------------
+I think the best way is start Horgand is:
+
+
+- Run horgand
+- Go to the settings menu
+- Select you favorite Midi Input
+- Select your audio output driver
+- Select the default bank to load
+  Default.horeb is an example bank released with horgand is located in  
+  /usr/local/share/horgand/  in the default installation.
+- Save Settings
+- Close horgand
+- Restart horgand
+
+
+Then horgand try's to connect to your devices, loads sounds bank and is ready to
+play.
+
+NOTE about auto-connection
+--------------------------
+
+horgand stores in the config file the ALSA sequencer Info of each port you
+select in your configuration, and use this info for auto-connection ports
+when hi starts. (That's because Client and Port Info can change).
+
+Then if you have two devices with the same Info, horgand uses the second one.
+
+Anyway you can use programs like aconnect for connect the MIDI devices.
+
+Horgand has a velocity metter, you can see your midi input events.
+
+
+How to add more loops? 
+----------------------
+Put your loops in  the user work directory and after you can edit your bass line
+pressing right click inside an empy pattern. Sorry but is responsability of
+the user to put the correrct numbers of bars and nominator for the loop. A
+mistake on this can produce unexpected results.
+
+Load & Save rythm file patterns in Menu File, also you can load you favorite
+file with -r when you start horgand.
+
+(Ex. horgand -r MiFav.hrt -b Default.horeb) Loads MiFav as rhytm file and
+also Default as bank file.Command line override settings.
+
+
+
+
+Banks
+-----
+Left Click to put the organ sound in the main window.
+Rigth Click to get the organ sound of the main window.
+
+
+-----------------------------------------------------------------------------------------
+
+
+
+
+Links
+-----
+
+If you want to hear something impressive please try this synthesizer .... 
+
+ZynAddSubFX - Copyright (c) 2002-2003 Nasca Octavian Paul at
+
+http://zynaddsubfx.sourceforge.net/
+
+
+
+You can send your comments to: holborn@telefonica.net 
+
+have a nice day ...
+
+
