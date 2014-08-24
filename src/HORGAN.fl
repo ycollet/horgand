@@ -1,31 +1,33 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
+version 1.0302 
 i18n_type 1 
 i18n_include <libintl.h> 
 i18n_function gettext 
 header_name {.h} 
 code_name {.cxx}
-decl {//Copyright (c) 2003-2008 Josep Andreu (Holborn)} {} 
+decl {//Copyright (c) 2003-2008 Josep Andreu (Holborn)} {private local
+} 
 
-decl {//License: GNU GPL version 2} {} 
+decl {//License: GNU GPL version 2} {private local
+} 
 
-decl {\#include "Holrgan.h"} {public
+decl {\#include "Holrgan.h"} {public local
 } 
 
 decl {\#include <FL/x.H>} {public global
 } 
 
-decl {\#include "horgand128.xpm"} {} 
-
-decl {\#include <FL/Fl_File_Chooser.H>} {public
+decl {\#include "horgand128.xpm"} {private local
 } 
 
-decl {\#include <FL/Fl_Dial.H>} {public
+decl {\#include <FL/Fl_File_Chooser.H>} {public local
 } 
 
-class Drawbar {: {public Fl_Slider}
+decl {\#include <FL/Fl_Dial.H>} {public local
+} 
+
+class Drawbar {open : {public Fl_Slider}
 } {
-  Function {Drawbar(int x,int y, int w, int h, const char *label=0):Fl_Slider(x,y,w,h,label)} {} {}
   Function {handle(int event)} {open return_type int
   } {
     code {switch(event)
@@ -55,11 +57,14 @@ default:
 return 1;
 }} {}
   }
+  Function {Drawbar(int x, int y, int w, int h, char * const label = 0) : Fl_Slider(x,y,w,h,label)} {open
+  } {
+    code {} {}
+  }
 } 
 
-class Rueda {: {public Fl_Dial}
+class Rueda {open : {public Fl_Dial}
 } {
-  Function {Rueda(int x,int y, int w, int h, const char *label=0):Fl_Dial(x,y,w,h,label)} {} {}
   Function {handle(int event)} {return_type int
   } {
     code {switch(event)
@@ -89,16 +94,23 @@ default:
 return 1;
 }} {}
   }
+  Function {Rueda(int x, int y, int w, int h, char * const label = 0) : Fl_Dial(x, y, w, h, label)} {open
+  } {
+    code {} {selected
+    }
+  }
 } 
 
-class HORGAN {} {
-  decl {HOR *hor;} {}
+class HORGAN {open
+} {
+  decl {HOR *hor;} {private local
+  }
   Function {make_window()} {} {
     Fl_Window HORwindow {
       callback {Guarda_Pref(0);
 o->hide();
 Pexitprogram=1;}
-      xywh {1587 81 825 595} type Double color 33 selection_color 47 resizable visible
+      xywh {539 81 825 595} type Double color 33 selection_color 47 resizable visible
     } {
       Fl_Box {} {
         xywh {595 405 230 190} box PLASTIC_UP_BOX color 0 labeltype ENGRAVED_LABEL labelsize 17 labelcolor 4 align 1
@@ -1342,7 +1354,7 @@ Actu();}
     Fl_Window aboutwindow {
       label {About...}
       callback {aboutwindow->hide();} open
-      xywh {1703 120 380 375} type Double box PLASTIC_DOWN_BOX color 32 visible
+      xywh {984 120 380 375} type Double box PLASTIC_DOWN_BOX color 32 visible
     } {
       Fl_Box {} {
         image {horgand128.xpm} xywh {175 13 195 107} labelsize 18
@@ -1354,7 +1366,7 @@ Actu();}
       Fl_Box {} {
         label {Copyright (C) 2003-2009 by Josep Andreu
      (Holborn) 
-      holborn@@telefonica.net } selected
+      holborn@@telefonica.net }
         xywh {10 115 345 70} labelfont 1 labelcolor 18 align 80
       }
       Fl_Box {} {
